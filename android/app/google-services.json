@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "362502861532",
+    "firebase_url": "https://win75-4a10e.firebaseio.com",
+    "project_id": "win75-4a10e",
+    "storage_bucket": "win75-4a10e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362502861532:android:5e34643eb81e66b9f1ba19",
+        "android_client_info": {
+          "package_name": "com.dope.win75"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362502861532-eo84oop32geauvme1u7li58an7shf7gr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dope.win75",
+            "certificate_hash": "cf4a48055913539aa4349e801667b332057bbe21"
+          }
+        },
+        {
+          "client_id": "362502861532-42sc5ht7fnsnut62j9qdkgvc7lcahpgk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAE-PM2vf4k_wGExn7Z6BliakRMHwpdFS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362502861532-42sc5ht7fnsnut62j9qdkgvc7lcahpgk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
