@@ -38,6 +38,9 @@ dependencies:
   dio: ^3.0.9
   firebase_core: ^0.4.5
   connectivity: ^0.4.8+6
+  true_time: ^0.1.0
+  provider: ^4.0.5+1
+  ntp: ^1.0.6
   flutter_secure_storage: ^3.3.3
 
 dev_dependencies:

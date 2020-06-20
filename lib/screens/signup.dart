@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:win75/screens/comeLater.dart';
 
-import 'home.dart';
 import 'login.dart';
 
 class SignUp extends StatelessWidget {
@@ -56,7 +56,7 @@ class SignUp extends StatelessWidget {
                   ),
                   FlatButton(
                     onPressed: () {
-                      Navigator.popAndPushNamed(context, HomeScreen.id);
+                      Navigator.popAndPushNamed(context, ComeLater.id);
                     },
                     child: Text(
                       "Go",

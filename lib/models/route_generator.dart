@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:win75/screens/SplashScreen.dart';
 import 'package:win75/screens/authentication.dart';
+import 'package:win75/screens/comeLater.dart';
 import 'package:win75/screens/connection.dart';
 import 'package:win75/screens/home.dart';
 import 'package:win75/screens/intro.dart';
@@ -43,7 +44,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => IntroScreen());
       case ConnectionLost.id:
         return MaterialPageRoute(builder: (_) => ConnectionLost());
-
+      case ComeLater.id:
+        return MaterialPageRoute(builder: (_) => ComeLater());
 // Validation of correct data type
 //        if (args is String) {
 //          return MaterialPageRoute(

@@ -1,8 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inner_drawer/inner_drawer.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:win75/components/DrawerBoilerPlate.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = "/home";
@@ -12,13 +9,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey<InnerDrawerState> _innerDrawerKey =
-      GlobalKey<InnerDrawerState>();
-
-  void toggle() {
-    _innerDrawerKey.currentState.toggle(direction: InnerDrawerDirection.start);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -31,34 +21,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomDrawer(
-      innerDrawerKey: _innerDrawerKey,
-      scaffold: Scaffold(
-        body: SafeArea(
-            child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-//                      splashColor: kPrimaryColor,
-                    icon: Icon(
-                      Icons.menu,
-                    ),
-                    onPressed: () async {
-                      toggle();
-                    },
-                    iconSize: 30,
-//                      highlightColor: kPrimaryColor,
-//                      color: kAccentColor,
-                  ),
-                  IconButton(
-                    icon: FaIcon(FontAwesomeIcons.search),
-                    onPressed: () async {
-                      /////////////get////////////////
+    return Scaffold(
+      body: SafeArea(
+          child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /////////////get////////////////
 //                    var response = await http
 //                        .get(getUserById + '5ec61cd1cb98ef2b7a7ba77a');
 //                    if (response.statusCode == 200) {
@@ -72,14 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
 //                    } else {
 //                      print(response.statusCode);
 //                    }
-                      /////////////post///////////
+            /////////////post///////////
 //                    var jsonData = json.encode(
 //                        {"password": "abcdpart3", "email": "shivam@gmail.com"});
 //                    var response = await http.post(login,
 //                        headers: {"Content-Type": "application/json"},
 //                        body: jsonData);
 //                    print(response.body);
-                      ///////////////////patch//////////////////
+            ///////////////////patch//////////////////
 //                    var response = await http.patch(
 //                      likeStory + "5ec43a4b9bfb033d60fb1af7",
 //                      headers: {
@@ -89,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
 //                      },
 //                    );
 //                    print(response.body);
-                      /////////////////delete////////////////////
+            /////////////////delete////////////////////
 //                    var response = await http.delete(
 //                        deleteStory + "5ec43a4b9bfb033d60fb1af7",
 //                        headers: {
@@ -97,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
 //                              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZWMzYTgwYjYzMTJiZDZiYWFiMjQ5YmQiLCJlbWFpbCI6InNoaXZhbXZlcm1hQGdtYWlsLmNvbSIsImlhdCI6MTU4OTg4MTAzM30.qNAMDgCb_0TwYuWyzo9_22E36sttxlm4d2CCZxEOS2I'
 //                        });
 //                    print(response.body);
-                      ///////////send image/////////////
+            ///////////send image/////////////
 //                      Dio dio = Dio();
 //                      var _image;
 //                      File image = await ImagePicker.pickImage(
@@ -140,34 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
 //                          print(error.response);
 //                        }
 //                      }
-                    },
-                    iconSize: 25,
-                    tooltip: "Search Story",
 //                    highlightColor: kPrimaryColor,
 //                    splashColor: kPrimaryColor,
 //                    color: kAccentColor,
-                  )
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(14.0),
-                child: Text(
-                  "#featured",
-                  textAlign: TextAlign.end,
-//                  style: kTextHeaderStyle.copyWith(
-//                      fontSize: MediaQuery.of(context).size.width * 0.1),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-            ],
-          ),
-        )),
-      ),
+          ],
+        ),
+      )),
     );
   }
 }

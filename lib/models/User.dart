@@ -4,8 +4,6 @@ class User {
   String username;
   String email;
   String image;
-  List<User> followers;
-  List<User> following;
   String password;
   bool disabled;
   String joinedOn;
@@ -14,8 +12,22 @@ class User {
       @required this.password,
       @required this.image,
       @required this.disabled,
-      @required this.followers,
-      @required this.following,
       @required this.joinedOn,
       @required this.username});
+  void updateUser({
+    String username,
+    String email,
+    String image,
+    String password,
+    bool disabled,
+    String joinedOn,
+  }) {
+    this.username = username;
+    this.email = email;
+    this.image = image;
+    this.joinedOn = joinedOn;
+    this.password = password;
+    this.disabled = disabled;
+    notifyListeners();
+  }
 }
