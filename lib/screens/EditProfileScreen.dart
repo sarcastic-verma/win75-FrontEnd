@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:win75/models/User.dart';
+import 'package:win75/screens/intro.dart';
+import 'package:win75/utilities/UiIcons.dart';
+import 'package:win75/utilities/auth.dart';
 
 class AccountSettings extends StatefulWidget {
   static const id = '/accountSettings';
@@ -29,11 +32,12 @@ class _AccountSettingsState extends State<AccountSettings> {
                     padding: EdgeInsets.all(0),
                     minWidth: 50.0,
                     height: 25.0,
-                    child: ProfileSettingsDialog(
-                      onChanged: () {
-                        setState(() {});
-                      },
-                    )),
+                    child: SizedBox()
+//                    ProfileSettingsDialog(
+//                      onChanged: () {
+//                        setState(() {});
+//                      },
+                    ),
               ),
               ListTile(
                 title: Center(
@@ -72,7 +76,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
                 trailing: Text(
-                  (user.email != '' ? user.email : user.phoneNumber),
+                  (user.email),
                   style: TextStyle(color: Theme.of(context).focusColor),
                 ),
               ),
@@ -83,7 +87,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 onTap: () async {
                   await AuthService().logOutUser();
                   Navigator.pushNamedAndRemoveUntil(
-                      context, OnBoardingWidget.id, (route) => false);
+                      context, IntroScreen.id, (route) => false);
                 },
                 child: Container(
                   decoration: ShapeDecoration(

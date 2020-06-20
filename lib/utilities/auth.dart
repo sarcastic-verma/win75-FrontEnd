@@ -2,35 +2,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:win75/models/User.dart';
 
 class AuthService {
-  Future storeUserInSharedPreferences(
-      {String uid,
-      String phoneNumber,
-      String username,
-      String email,
-      String image,
-      String date}) async {
+  Future storeUserInSharedPreferences({
+    String username,
+    String email,
+    String image,
+    String password,
+    bool disabled,
+    String joinedOn,
+  }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('uid', uid);
-    await prefs.setString('phoneNumber', phoneNumber);
-
+    await prefs.setBool('disabled', disabled);
     await prefs.setString('username', username);
     await prefs.setString('email', email);
     await prefs.setString('image', image);
-    await prefs.setString('dateOfCreation', date);
-
-    print('saved successfully');
-    print(prefs.getString('phoneNumber'));
+    await prefs.setString('password', password);
+    await prefs.setString('joinedOn', joinedOn);
   }
 
   //fetch the user details from shared preferences
   Future<User> getUserFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return User(
-      uid: prefs.getString('uid'),
-      phoneNumber: prefs.getString('phoneNumber'),
+      disabled: prefs.getBool('disabled'),
+      joinedOn: prefs.getString("joinedOn"),
+      password: prefs.getString("password"),
       username: prefs.getString('username'),
       image: prefs.getString('image'),
-      date: prefs.getString('date'),
       email: prefs.getString('email'),
     );
   }
