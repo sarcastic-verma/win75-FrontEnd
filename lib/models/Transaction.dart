@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 
 class Transaction {
-  String id;
+  String transactionId;
   String status;
   int amount;
   Transaction({
     @required this.status,
-    @required this.id,
+    @required this.transactionId,
     @required this.amount,
   });
 }
