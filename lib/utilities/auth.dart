@@ -3,6 +3,7 @@ import 'package:win75/models/User.dart';
 
 class AuthService {
   Future storeUserInSharedPreferences({
+    String uid,
     String username,
     String email,
     String image,
@@ -12,6 +13,7 @@ class AuthService {
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('disabled', disabled);
+    await prefs.setString('uid', uid);
     await prefs.setString('username', username);
     await prefs.setString('email', email);
     await prefs.setString('image', image);
@@ -28,6 +30,7 @@ class AuthService {
       password: prefs.getString("password"),
       username: prefs.getString('username'),
       image: prefs.getString('image'),
+      uid: prefs.getString('uid'),
       email: prefs.getString('email'),
     );
   }
@@ -40,6 +43,7 @@ class AuthService {
       await prefs.remove('username');
       await prefs.remove('email');
       await prefs.remove('image');
+      await prefs.remove('uid');
       await prefs.remove('dateOfCreation');
     } catch (err) {
       print(err);

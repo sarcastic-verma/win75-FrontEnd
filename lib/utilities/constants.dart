@@ -7,3 +7,9 @@ var kDefaultTheme = ThemeData(
   focusColor: Colors.purpleAccent,
   hintColor: Colors.pink,
 );
+const Spades = 'SPADES';
+const Club = 'CLUB';
+const Success = 'SUCCESS';
+const Fail = 'FAIL';
+const Diamond = 'DIAMOND';
+const Heart = 'HEART';
