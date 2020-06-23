@@ -14,7 +14,7 @@ import 'package:win75/utilities/auth.dart';
 class ProfileSettingsDialog extends StatefulWidget {
   VoidCallback onChanged;
 
-  ProfileSettingsDialog({Key key, this.user, this.onChanged}) : super(key: key);
+//  ProfileSettingsDialog({Key key, this.user, this.onChanged}) : super(key: key);
 
   @override
   _ProfileSettingsDialogState createState() => _ProfileSettingsDialogState();
@@ -163,19 +163,19 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                   String fileName = basename(user.uid);
                   //  StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
                   //  firebaseStorageRef.delete();
-                  StorageReference newFirebaseStorageRef = FirebaseStorage
-                      .instance
-                      .ref()
-                      .child("UserImages/$fileName");
-                  StorageUploadTask uploadTask =
-                      newFirebaseStorageRef.putFile(_selectedFile);
-                  //  StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
-                  var dowurl =
-                      await (await uploadTask.onComplete).ref.getDownloadURL();
-                  String url = dowurl.toString();
-                  print('url: $url');
-                  updateProvider(url);
-                  print("image");
+//                  StorageReference newFirebaseStorageRef = FirebaseStorage
+//                      .instance
+//                      .ref()
+//                      .child("UserImages/$fileName");
+//                  StorageUploadTask uploadTask =
+//                      newFirebaseStorageRef.putFile(_selectedFile);
+//                  //  StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
+//                  var dowurl =
+//                      await (await uploadTask.onComplete).ref.getDownloadURL();
+//                  String url = dowurl.toString();
+//                  print('url: $url');
+//                  updateProvider(url);
+//                  print("image");
                   print(user.image);
                   service.updateUsernameImage(user.username, url, user.uid);
 
