@@ -160,7 +160,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
             Future uploadPic(BuildContext context) async {
               try {
                 if (_selectedFile != null) {
-                  String fileName = basename(user.uid);
+//                  String fileName = basename(user.uid);
                   //  StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
                   //  firebaseStorageRef.delete();
 //                  StorageReference newFirebaseStorageRef = FirebaseStorage
@@ -261,7 +261,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                             SizedBox(width: 10),
                             Text(
                               'Profile Settings',
-                              style: Theme.of(context).textTheme.body2,
+                              style: Theme.of(context).textTheme.bodyText1,
                             )
                           ],
                         ),
@@ -631,7 +631,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
 //                                      phoneNumber: user.phoneNumber,
 //                                      email: user.email,
 //                                    );
-                                    print("input_${input}");
+                                    print("input_$input");
                                     service.updateUsernameImage(
                                         input, user.image, user.uid);
                                     // String oldUser =
@@ -764,7 +764,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
       },
       child: Text(
         "Edit",
-        style: Theme.of(context).textTheme.body1,
+        style: Theme.of(context).textTheme.bodyText2,
       ),
     );
   }
