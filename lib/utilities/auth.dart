@@ -2,15 +2,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:win75/models/User.dart';
 
 class AuthService {
-  Future storeUserInSharedPreferences({
-    String uid,
-    String username,
-    String email,
-    String image,
-    String password,
-    bool disabled,
-    String joinedOn,
-  }) async {
+  Future storeUserInSharedPreferences(
+      {String referralCode,
+      int inWalletCash,
+      int totalAmountSpent,
+      String uid,
+      String username,
+      String email,
+      String image,
+      String password,
+      bool disabled,
+      String joinedOn,
+      int points}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('disabled', disabled);
     await prefs.setString('uid', uid);

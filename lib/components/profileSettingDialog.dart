@@ -12,7 +12,8 @@ import 'package:win75/utilities/UiIcons.dart';
 import 'package:win75/utilities/auth.dart';
 
 class ProfileSettingsDialog extends StatefulWidget {
-  VoidCallback onChanged;
+  final VoidCallback onChanged;
+  ProfileSettingsDialog({this.onChanged});
 
 //  ProfileSettingsDialog({Key key, this.user, this.onChanged}) : super(key: key);
 
@@ -39,7 +40,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
       return new InputDecoration(
         hintText: hintText,
         labelText: labelText,
-        hintStyle: Theme.of(context).textTheme.body1.merge(
+        hintStyle: Theme.of(context).textTheme.bodyText2.merge(
               TextStyle(color: Theme.of(context).focusColor),
             ),
         enabledBorder: UnderlineInputBorder(
@@ -48,7 +49,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
         focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: Theme.of(context).hintColor)),
         hasFloatingPlaceholder: true,
-        labelStyle: Theme.of(context).textTheme.body1.merge(
+        labelStyle: Theme.of(context).textTheme.bodyText2.merge(
               TextStyle(color: Theme.of(context).hintColor),
             ),
       );
@@ -59,130 +60,25 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
         showDialog(
           context: context,
           builder: (context) {
-            // int count = 1;
-
             AuthService service = new AuthService();
-            // void initState() async {
-            //   User result = await service.getUserFromSharedPreferences();
-
-            //   String name = result.username;
-            //   print('name: $name');
-            // }
             GlobalKey<FormState> _profileSettingsFormKey =
                 new GlobalKey<FormState>();
             File _selectedFile;
             bool _inProcess = false;
-
-            void getImage(ImageSource source) async {
-              setState(() {
-                _inProcess = true;
-                widget.onChanged();
-              });
-              print('selectedFile: $_selectedFile');
-              File image = await ImagePicker.pickImage(source: source);
-              if (image != null) {
-                File cropped = await ImageCropper.cropImage(
-                    sourcePath: image.path,
-                    aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-                    compressQuality: 100,
-                    maxWidth: 700,
-                    maxHeight: 700,
-                    compressFormat: ImageCompressFormat.jpg,
-                    androidUiSettings: AndroidUiSettings(
-                      toolbarColor: Colors.blue,
-                      toolbarTitle: "Yehlo Cropper",
-                      statusBarColor: Colors.blue,
-                      backgroundColor: Colors.white,
-                    ));
-                print('cropped: $cropped');
-                Navigator.pop(context);
-                print('befire selectedFile: $_selectedFile');
-                setState(() {
-                  _selectedFile = cropped;
-                  print('selectedFile: $_selectedFile');
-                  _inProcess = false;
-                  widget.onChanged();
-                });
-              } else {
-                setState(() {
-                  _inProcess = false;
-                  widget.onChanged();
-                });
-              }
-            }
-
             void _submit() {
               if (_profileSettingsFormKey.currentState.validate()) {
                 print("Reached submission");
-                // setState(() {
-                //   loaderScreen = false;
-                // });
                 _profileSettingsFormKey.currentState.save();
-                // Navigator.pop(context);
               }
             }
-
-            void cameraPress() {
-              showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.photo_camera),
-                            onPressed: () {
-                              getImage(ImageSource.camera);
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.photo),
-                            onPressed: () {
-                              getImage(ImageSource.gallery);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  });
-            }
-
-            // void change() {
-            //   setState(() {
-            //     count = 2;
-            //   });
-            // }
 
             print(service);
 
             Future uploadPic(BuildContext context) async {
               try {
                 if (_selectedFile != null) {
-//                  String fileName = basename(user.uid);
-                  //  StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
-                  //  firebaseStorageRef.delete();
-//                  StorageReference newFirebaseStorageRef = FirebaseStorage
-//                      .instance
-//                      .ref()
-//                      .child("UserImages/$fileName");
-//                  StorageUploadTask uploadTask =
-//                      newFirebaseStorageRef.putFile(_selectedFile);
-//                  //  StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
-//                  var dowurl =
-//                      await (await uploadTask.onComplete).ref.getDownloadURL();
-//                  String url = dowurl.toString();
-//                  print('url: $url');
-//                  updateProvider(url);
-//                  print("image");
                   print(user.image);
                   service.updateUsernameImage(user.username, url, user.uid);
-
-                  // String oldUser =
-                  //     (await service.getUserFromSharedPreferences())
-                  //         .username;
-                  // print('oldName $oldUser');
                   service.storeUserInSharedPreferences(
                       username: user.username,
                       image: user.image,
@@ -191,49 +87,10 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                       email: user.email);
                 }
                 print('Profile Detail updated');
-                // setState(() {
-                //     // loaderScreen = false;
-                //     // print("loaderScreen2nd $loaderScreen");
-                //     print('Profile Detail updated');
-                //     // _profileSettingsFormKey.currentState.save();
-                //     // Navigator.of(context).pop();
-                //   });
-                // setState(() {
-                //   // isSaved = true;
-                //   print('Profile Detail updated');
-                // });
               } catch (e) {
                 print(e);
               }
             }
-            // Widget getImageWidget() {
-            //   return Image.file(
-            //     (selectedFile != null
-            //         ? selectedFile
-            //         :),
-            //     width: 50,
-            //     height: 50,
-            //     fit: BoxFit.cover,
-            //   );
-            // }
-
-            // Widget getImageWidget() {
-            //   if (_selectedFile != null) {
-            //     return FileImage(
-            //       _selectedFile,
-            //       // width: 250,
-            //       // height: 250,
-            //       // fit: BoxFit.cover,
-            //     );
-            //   } else {
-            //     return Image.asset(
-            //       "img/user2.jpg",
-            //       // width: 250,
-            //       // height: 250,
-            //       // fit: BoxFit.cover,
-            //     );
-            //   }
-            // }
 
             return StatefulBuilder(
               builder: (context, setState) {

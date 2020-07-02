@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 
 var kDefaultTheme = ThemeData(
-    inputDecorationTheme: InputDecorationTheme(
-      contentPadding: EdgeInsets.all(12),
-      hintStyle: TextStyle(),
-      border: UnderlineInputBorder(borderSide: BorderSide.none),
-      enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-      focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-    ),
     primaryColor: Colors.white,
     brightness: Brightness.light,
     accentColor: Colors.purple,
@@ -33,9 +26,10 @@ var kDefaultTheme = ThemeData(
           fontSize: 14.0, fontWeight: FontWeight.w600, color: Colors.black),
       caption: TextStyle(fontSize: 12.0, color: Colors.black),
     ));
-const Spades = 'SPADES';
-const Club = 'CLUB';
-const Success = 'SUCCESS';
-const Fail = 'FAIL';
-const Diamond = 'DIAMOND';
-const Heart = 'HEART';
+const spades = 'SPADES';
+const club = 'CLUB';
+const success = 'SUCCESS';
+const fail = 'FAIL';
+const inProgress = 'INPROGRESS';
+const diamond = 'DIAMOND';
+const heart = 'HEART';

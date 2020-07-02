@@ -4,7 +4,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:true_time/true_time.dart';
 import 'package:win75/models/route_generator.dart';
 import 'package:win75/screens/SplashScreen.dart';
 import 'package:win75/screens/connection.dart';
@@ -32,31 +31,12 @@ class _MyAppState extends State<MyApp> {
     connectivitySubscription.cancel();
   }
 
-  bool _initialized = false;
-  DateTime _currentTime;
-
-  _initPlatformState() async {
-    bool initialized = await TrueTime.init();
-    setState(() {
-      _initialized = initialized;
-    });
-    print(initialized);
-    if (initialized) _updateCurrentTime();
-  }
-
-  _updateCurrentTime() async {
-    DateTime now = await TrueTime.now();
-    print(now);
-    setState(() {
-      _currentTime = now;
-    });
-    print(_currentTime);
-  }
-
   @override
   void initState() {
     super.initState();
-    _initPlatformState();
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     connectivitySubscription = Connectivity()
         .onConnectivityChanged

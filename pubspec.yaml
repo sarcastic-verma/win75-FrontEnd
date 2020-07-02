@@ -36,11 +36,10 @@ dependencies:
   carousel_slider: ^2.0.0
   http: ^0.12.1
   dio: ^3.0.9
-  firebase_core: ^0.4.5
   connectivity: ^0.4.8+6
-  true_time: ^0.1.0
   provider: ^4.0.5+1
   flutter_spinkit: ^4.1.2
+  circular_countdown_timer: ^0.0.4
   ntp: ^1.0.6
   flutter_secure_storage: ^3.3.3
 
@@ -60,8 +59,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-#  assets:
-#   - assets/images
+  assets:
+   - assets/images/connection_lost.png
   fonts:
     - family: EcommerceAppUI
       fonts:

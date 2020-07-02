@@ -4,6 +4,7 @@ import 'package:win75/models/PlayerSummary.dart';
 
 class Game {
   String gid;
+  String slotId;
   double distributableProfitPercent;
   int businessProfit;
   int distributableProfit;
@@ -19,6 +20,7 @@ class Game {
   List<OptionSummary> optionWiseSummary;
   List<PlayerSummary> playerSummary;
   Game({
+    @required this.slotId,
     @required this.betValue,
     @required this.distributableProfit,
     @required this.totalProfit,
