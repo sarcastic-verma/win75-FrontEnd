@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:win75/components/CustomOption.dart';
 
-class GamePage extends StatefulWidget {
+class GameTab extends StatefulWidget {
   @override
-  _GamePageState createState() => _GamePageState();
+  _GameTabState createState() => _GameTabState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _GameTabState extends State<GameTab> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.1,
       width: MediaQuery.of(context).size.width,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /////////////get////////////////
@@ -102,16 +102,16 @@ class _GamePageState extends State<GamePage> {
 //                    splashColor: kPrimaryColor,
 //                    color: kAccentColor,
           CustomOption(
-            optionName: "Spade",
+            optionImage: "assets/images/spade.png",
           ),
           CustomOption(
-            optionName: "Diamond",
+            optionImage: "assets/images/Diamond.png",
           ),
           CustomOption(
-            optionName: "Heart",
+            optionImage: "assets/images/Heart.png",
           ),
           CustomOption(
-            optionName: "Club",
+            optionImage: "assets/images/club.png",
           ),
         ],
       ),

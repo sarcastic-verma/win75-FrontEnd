@@ -1,15 +1,14 @@
 import 'package:flutter/cupertino.dart';
-import 'package:win75/models/Game.dart';
-import 'package:win75/models/Transaction.dart';
 
-class User {
+class User extends ChangeNotifier {
   String uid;
   int points;
   String referralCode;
-  List<Game> games;
+  List games;
   int totalAmountWon;
   int totalAmountSpent;
-  List<Transaction> transactions;
+  List transactions;
+  String mobile;
   String username;
   String email;
   String image;
@@ -19,6 +18,7 @@ class User {
   String joinedOn;
   User(
       {@required this.email,
+      @required this.mobile,
       @required this.games,
       @required this.referralCode,
       @required this.inWalletCash,
@@ -32,4 +32,23 @@ class User {
       @required this.disabled,
       @required this.joinedOn,
       @required this.username});
+  void updateUser(
+      {int inWalletCash,
+      String uid,
+      String mobile,
+      String username,
+      String email,
+      String image,
+      bool disabled,
+      String joinedOn,
+      int points}) {
+    this.uid = uid;
+    this.mobile = mobile;
+    this.username = username;
+    this.email = email;
+    this.image = image;
+    this.joinedOn = joinedOn;
+    this.inWalletCash = inWalletCash;
+    notifyListeners();
+  }
 }

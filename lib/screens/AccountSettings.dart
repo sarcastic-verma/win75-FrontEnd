@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:win75/components/profileSettingDialog.dart';
 import 'package:win75/models/User.dart';
 import 'package:win75/screens/intro.dart';
 import 'package:win75/utilities/UiIcons.dart';
@@ -29,15 +30,15 @@ class _AccountSettingsState extends State<AccountSettings> {
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
                 trailing: ButtonTheme(
-                    padding: EdgeInsets.all(0),
-                    minWidth: 50.0,
-                    height: 25.0,
-                    child: SizedBox()
-//                    ProfileSettingsDialog(
-//                      onChanged: () {
-//                        setState(() {});
-//                      },
-                    ),
+                  padding: EdgeInsets.all(0),
+                  minWidth: 50.0,
+                  height: 25.0,
+                  child: ProfileSettingsDialog(
+                    onChanged: () {
+                      setState(() {});
+                    },
+                  ),
+                ),
               ),
               ListTile(
                 title: Center(
@@ -72,11 +73,23 @@ class _AccountSettingsState extends State<AccountSettings> {
                 onTap: () {},
                 dense: true,
                 title: Text(
-                  (user.email != '' ? 'Email' : 'Phone Number'),
+                  ('Email'),
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
                 trailing: Text(
                   (user.email),
+                  style: TextStyle(color: Theme.of(context).focusColor),
+                ),
+              ),
+              ListTile(
+                onTap: () {},
+                dense: true,
+                title: Text(
+                  ('Phone Number'),
+                  style: Theme.of(context).textTheme.bodyText2,
+                ),
+                trailing: Text(
+                  (user.mobile),
                   style: TextStyle(color: Theme.of(context).focusColor),
                 ),
               ),

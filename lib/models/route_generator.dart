@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:win75/components/pages.dart';
 import 'package:win75/screens/SplashScreen.dart';
 import 'package:win75/screens/authentication.dart';
+import 'package:win75/screens/battlefield.dart';
 import 'package:win75/screens/connection.dart';
-import 'package:win75/screens/home.dart';
 import 'package:win75/screens/intro.dart';
 import 'package:win75/screens/login.dart';
 import 'package:win75/screens/signup.dart';
@@ -22,8 +23,8 @@ class RouteGenerator {
 //      case EditProfileScreen.id:
 //        return MaterialPageRoute(builder: (_) => EditProfileScreen());
 
-      case HomeScreen.id:
-        return MaterialPageRoute(builder: (_) => HomeScreen());
+      case BattleFieldScreen.id:
+        return MaterialPageRoute(builder: (_) => BattleFieldScreen());
       case LoginIn.id:
         return MaterialPageRoute(builder: (_) => LoginIn());
       case SignUp.id:
@@ -38,7 +39,11 @@ class RouteGenerator {
 ////          return MaterialPageRoute(builder: (_) => AuthScreen());
 ////        }
 //        break;
-
+      case Pages.id:
+        return MaterialPageRoute(
+            builder: (_) => Pages(
+                  currentTab: 1,
+                ));
       case IntroScreen.id:
         return MaterialPageRoute(builder: (_) => IntroScreen());
       case ConnectionLost.id:

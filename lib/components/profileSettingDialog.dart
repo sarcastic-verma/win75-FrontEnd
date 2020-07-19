@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:win75/models/User.dart';
 import 'package:win75/utilities/UiIcons.dart';
@@ -13,9 +12,8 @@ import 'package:win75/utilities/auth.dart';
 
 class ProfileSettingsDialog extends StatefulWidget {
   final VoidCallback onChanged;
-  ProfileSettingsDialog({this.onChanged});
 
-//  ProfileSettingsDialog({Key key, this.user, this.onChanged}) : super(key: key);
+  ProfileSettingsDialog({Key key, this.onChanged}) : super(key: key);
 
   @override
   _ProfileSettingsDialogState createState() => _ProfileSettingsDialogState();
@@ -28,12 +26,14 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
     void updateProvider(String url) {
-//      Provider.of<User>(context, listen: false).updateUser(
-//        username: user.username,
-//        image: url,
-//        uid: user.uid,
-//        email: user.email,
-//      );
+      Provider.of<User>(context, listen: false).updateUser(
+        username: user.username,
+        image: url,
+        joinedOn: user.joinedOn,
+        uid: user.uid,
+        mobile: user.mobile,
+        email: user.email,
+      );
     }
 
     InputDecoration getInputDecoration({String hintText, String labelText}) {
@@ -60,15 +60,66 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
         showDialog(
           context: context,
           builder: (context) {
+            // int count = 1;
+
             AuthService service = new AuthService();
+            // void initState() async {
+            //   User result = await service.getUserFromSharedPreferences();
+
+            //   String name = result.username;
+            //   print('name: $name');
+            // }
             GlobalKey<FormState> _profileSettingsFormKey =
                 new GlobalKey<FormState>();
             File _selectedFile;
             bool _inProcess = false;
+
+            void getImage(ImageSource source) async {
+              setState(() {
+                _inProcess = true;
+                widget.onChanged();
+              });
+              print('selectedFile: $_selectedFile');
+              File image = await ImagePicker.pickImage(source: source);
+              if (image != null) {
+                File cropped = await ImageCropper.cropImage(
+                    sourcePath: image.path,
+                    aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+                    compressQuality: 100,
+                    maxWidth: 700,
+                    maxHeight: 700,
+                    compressFormat: ImageCompressFormat.jpg,
+                    androidUiSettings: AndroidUiSettings(
+                      toolbarColor: Colors.blue,
+                      toolbarTitle: "Yehlo Cropper",
+                      statusBarColor: Colors.blue,
+                      backgroundColor: Colors.white,
+                    ));
+                print('cropped: $cropped');
+                Navigator.pop(context);
+                print('befire selectedFile: $_selectedFile');
+                setState(() {
+                  _selectedFile = cropped;
+                  print('selectedFile: $_selectedFile');
+                  _inProcess = false;
+                  widget.onChanged();
+                });
+              } else {
+                setState(() {
+                  _inProcess = false;
+                  widget.onChanged();
+                });
+              }
+            }
+
             void _submit() {
               if (_profileSettingsFormKey.currentState.validate()) {
                 print("Reached submission");
+                // setState(() {
+                //   loaderScreen = false;
+                // });
                 _profileSettingsFormKey.currentState.save();
+                // Navigator.pop(context);
               }
             }
 
@@ -77,20 +128,83 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
             Future uploadPic(BuildContext context) async {
               try {
                 if (_selectedFile != null) {
+                  //  StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
+                  //  firebaseStorageRef.delete();
+//                  StorageReference newFirebaseStorageRef = FirebaseStorage
+//                      .instance
+//                      .ref()
+//                      .child("UserImages/$fileName");
+//                  StorageUploadTask uploadTask =
+//                      newFirebaseStorageRef.putFile(_selectedFile);
+                  //  StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
+                  var dowurl = "";
+//                      await (await uploadTask.onComplete).ref.getDownloadURL();
+                  String url = dowurl.toString();
+                  print('url: $url');
+                  updateProvider(url);
+                  print("image");
                   print(user.image);
-                  service.updateUsernameImage(user.username, url, user.uid);
+                  service.updateUsernameImage(
+                      imgUrl: url,
+                      mobile: user.mobile,
+                      username: user.username);
+
+                  // String oldUser =
+                  //     (await service.getUserFromSharedPreferences())
+                  //         .username;
+                  // print('oldName $oldUser');
                   service.storeUserInSharedPreferences(
                       username: user.username,
                       image: user.image,
-                      uid: user.uid,
                       joinedOn: user.joinedOn,
+                      uid: user.uid,
+                      mobile: user.mobile,
                       email: user.email);
                 }
                 print('Profile Detail updated');
+                // setState(() {
+                //     // loaderScreen = false;
+                //     // print("loaderScreen2nd $loaderScreen");
+                //     print('Profile Detail updated');
+                //     // _profileSettingsFormKey.currentState.save();
+                //     // Navigator.of(context).pop();
+                //   });
+                // setState(() {
+                //   // isSaved = true;
+                //   print('Profile Detail updated');
+                // });
               } catch (e) {
                 print(e);
               }
             }
+            // Widget getImageWidget() {
+            //   return Image.file(
+            //     (selectedFile != null
+            //         ? selectedFile
+            //         :),
+            //     width: 50,
+            //     height: 50,
+            //     fit: BoxFit.cover,
+            //   );
+            // }
+
+            // Widget getImageWidget() {
+            //   if (_selectedFile != null) {
+            //     return FileImage(
+            //       _selectedFile,
+            //       // width: 250,
+            //       // height: 250,
+            //       // fit: BoxFit.cover,
+            //     );
+            //   } else {
+            //     return Image.asset(
+            //       "img/user2.jpg",
+            //       // width: 250,
+            //       // height: 250,
+            //       // fit: BoxFit.cover,
+            //     );
+            //   }
+            // }
 
             return StatefulBuilder(
               builder: (context, setState) {
@@ -479,32 +593,22 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                                       ? 'Enter a username'
                                       : null,
                                   onSaved: (input) async {
-//                                    Provider.of<User>(context, listen: false)
-//                                        .updateUser(
-//                                      username: input,
-//                                      image: user.image,
-//                                      date: user.date,
-//                                      uid: user.uid,
-//                                      phoneNumber: user.phoneNumber,
-//                                      email: user.email,
-//                                    );
-                                    print("input_$input");
-                                    service.updateUsernameImage(
-                                        input, user.image, user.uid);
-                                    // String oldUser =
-                                    //     (await service.getUserFromSharedPreferences())
-                                    //         .username;
-                                    // print('oldName $oldUser');
+                                    Provider.of<User>(context, listen: false)
+                                        .updateUser(
+                                      username: input,
+                                      image: user.image,
+                                      joinedOn: user.joinedOn,
+                                      uid: user.uid,
+                                      mobile: user.mobile,
+                                      email: user.email,
+                                    );
                                     service.storeUserInSharedPreferences(
                                         username: input,
                                         image: user.image,
                                         joinedOn: user.joinedOn,
                                         uid: user.uid,
+                                        mobile: user.mobile,
                                         email: user.email);
-                                    // String newUser =
-                                    //     (await service.getUserFromSharedPreferences())
-                                    //         .username;
-                                    // print('newName $newUser');
                                   },
                                 ),
                                 new TextFormField(
@@ -515,6 +619,17 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                                   decoration: getInputDecoration(
                                       hintText: '', labelText: 'Email Address'),
                                   initialValue: user.email,
+                                  validator: (input) => null,
+                                  // onSaved: (input) => widget.user.email = input,
+                                ),
+                                TextFormField(
+                                  enabled: false,
+                                  style: TextStyle(
+                                      color: Theme.of(context).hintColor),
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: getInputDecoration(
+                                      hintText: '', labelText: 'Phone Number'),
+                                  initialValue: user.mobile,
                                   validator: (input) => null,
                                   // onSaved: (input) => widget.user.email = input,
                                 ),

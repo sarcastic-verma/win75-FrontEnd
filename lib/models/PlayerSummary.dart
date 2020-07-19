@@ -2,13 +2,15 @@ import 'package:flutter/cupertino.dart';
 
 class PlayerSummary {
   String playerId;
-  List<String> optedOptions;
-  List<String> acceptedOptions;
+  String gameId;
+  List optedOptions;
+  List acceptedOptions;
   int totalInvestment;
   int profitableInvestment;
   double proportionalGain;
   double totalGain;
   PlayerSummary({
+    @required this.gameId,
     @required this.playerId,
     @required this.profitableInvestment,
     @required this.totalGain,

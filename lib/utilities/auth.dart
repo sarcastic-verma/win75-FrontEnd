@@ -3,14 +3,12 @@ import 'package:win75/models/User.dart';
 
 class AuthService {
   Future storeUserInSharedPreferences(
-      {String referralCode,
-      int inWalletCash,
-      int totalAmountSpent,
+      {int inWalletCash,
       String uid,
+      String mobile,
       String username,
       String email,
       String image,
-      String password,
       bool disabled,
       String joinedOn,
       int points}) async {
@@ -20,8 +18,10 @@ class AuthService {
     await prefs.setString('username', username);
     await prefs.setString('email', email);
     await prefs.setString('image', image);
-    await prefs.setString('password', password);
+    await prefs.setInt('inWalletCash', inWalletCash);
     await prefs.setString('joinedOn', joinedOn);
+    await prefs.setString('mobile', mobile);
+    await prefs.setInt('points', points);
   }
 
   //fetch the user details from shared preferences
@@ -29,10 +29,12 @@ class AuthService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return User(
       disabled: prefs.getBool('disabled'),
+      points: prefs.getInt('points'),
       joinedOn: prefs.getString("joinedOn"),
-      password: prefs.getString("password"),
       username: prefs.getString('username'),
       image: prefs.getString('image'),
+      inWalletCash: prefs.getInt('inWalletCash'),
+      mobile: prefs.getString('mobile'),
       uid: prefs.getString('uid'),
       email: prefs.getString('email'),
     );
@@ -42,35 +44,26 @@ class AuthService {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('uid');
-      await prefs.remove('phoneNumber');
       await prefs.remove('username');
       await prefs.remove('email');
+      await prefs.remove('points');
+      await prefs.remove('inWalletCash');
       await prefs.remove('image');
       await prefs.remove('uid');
-      await prefs.remove('dateOfCreation');
+      await prefs.remove('mobile');
+      await prefs.remove('joinedOn');
     } catch (err) {
       print(err);
     }
   }
 
-  Future updateUsernameImage(name, url, uid) async {
-    try {
-//      print("updateObtained_ $url");
-//      var databaseReference = Firestore.instance;
-//      await databaseReference
-//          .collection('users')
-//          .document(uid)
-//          .updateData({'username': name, 'image': url});
-//      final QuerySnapshot result = await Firestore.instance
-//          .collection('users')
-//          .where('uid', isEqualTo: uid)
-//          .getDocuments();
-//      final List<DocumentSnapshot> documents = result.documents;
-//      print("db_${documents[0]['username']}");
-//      // .updateData({'username': name});
-//      // String s = 'yes';
-//      // return s;
-    } catch (e) {
+  Future updateUsernameImage({
+    username,
+    mobile,
+    password,
+    imgUrl,
+  }) async {
+    try {} catch (e) {
       print("caught error: ${e.toString()}");
     }
   }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:win75/screens/home.dart';
+import 'package:win75/components/pages.dart';
 
 import 'login.dart';
 
 class SignUp extends StatelessWidget {
   static const id = '/signup';
-  bool imageSelected = false;
   @override
   Widget build(BuildContext context) {
+    bool imageSelected = false;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -56,7 +56,7 @@ class SignUp extends StatelessWidget {
                   ),
                   FlatButton(
                     onPressed: () {
-                      Navigator.popAndPushNamed(context, HomeScreen.id);
+                      Navigator.popAndPushNamed(context, Pages.id);
                     },
                     child: Text(
                       "Go",

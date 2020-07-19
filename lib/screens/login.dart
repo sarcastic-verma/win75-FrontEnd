@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:win75/components/pages.dart';
 import 'package:win75/screens/signup.dart';
-
-import 'home.dart';
 
 class LoginIn extends StatelessWidget {
   static const id = '/login';
@@ -49,8 +48,8 @@ class LoginIn extends StatelessWidget {
                     height: 35,
                   ),
                   FlatButton(
-                    onPressed: () {
-                      Navigator.popAndPushNamed(context, HomeScreen.id);
+                    onPressed: () async {
+                      Navigator.popAndPushNamed(context, Pages.id);
                     },
                     child: Text(
                       "Go",

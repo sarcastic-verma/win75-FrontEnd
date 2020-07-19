@@ -1,6 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:win75/models/OptionSummary.dart';
-import 'package:win75/models/PlayerSummary.dart';
 
 class Game {
   String gid;
@@ -11,14 +9,13 @@ class Game {
   int totalProfit;
   int gameInvestment;
   int playerCount;
-  List<String> droppedOptions;
+  List droppedOptions;
   int spadesTotalInvestment;
   int heartTotalInvestment;
   int diamondTotalInvestment;
   int clubTotalInvestment;
   int betValue;
-  List<OptionSummary> optionWiseSummary;
-  List<PlayerSummary> playerSummary;
+  List playerSummary;
   Game({
     @required this.slotId,
     @required this.betValue,
@@ -35,6 +32,5 @@ class Game {
     @required this.businessProfit,
     @required this.playerCount,
     @required this.playerSummary,
-    @required this.optionWiseSummary,
   });
 }
