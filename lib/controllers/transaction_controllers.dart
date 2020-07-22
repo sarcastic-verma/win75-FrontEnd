@@ -69,7 +69,6 @@ class TransactionControllers {
       return false;
     }
   }
-  }
   Future addMoney(int amount) async {
     var jsonData = json.encode({"amount": amount});
     try {
