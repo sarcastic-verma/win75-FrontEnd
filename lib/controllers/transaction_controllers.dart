@@ -29,7 +29,47 @@ class TransactionControllers {
       return false;
     }
   }
-
+  Future addPoints(int amount) async {
+    var jsonData = json.encode({"amount": amount});
+    try {
+      String token = await storage.read(key: 'jwt');
+      var response = await http.post(addPointsCa,
+          headers: {
+            "Content-Type": "application/json",
+            "Autherization": "Bearer $token"
+          },
+          body: jsonData);
+      var jsonResponse = await json.decode(response.body);
+      if (jsonResponse['message'] == "added") {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
+  }
+  Future reducePoints(int amount) async {
+    var jsonData = json.encode({"amount": amount});
+    try {
+      String token = await storage.read(key: 'jwt');
+      var response = await http.post(reducePointsCa,
+          headers: {
+            "Content-Type": "application/json",
+            "Autherization": "Bearer $token"
+          },
+          body: jsonData);
+      var jsonResponse = await json.decode(response.body);
+      if (jsonResponse['message'] == "reduced") {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
+  }
+  }
   Future addMoney(int amount) async {
     var jsonData = json.encode({"amount": amount});
     try {

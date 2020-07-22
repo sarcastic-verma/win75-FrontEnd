@@ -14,6 +14,8 @@ const endGameCa = gameBase + 'endgame/';
 
 const addMoneyCa = transactionBase + 'add';
 const redeemMoneyCa = transactionBase + 'redeem';
+const addPointsCa = transactionBase + 'addPoints';
+const reducePointsCa = transactionBase + 'reducePoints';
 ///////////////Users Routes////////////////////
 
 const getUsers = userBase;

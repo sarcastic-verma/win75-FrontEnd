@@ -154,13 +154,11 @@ class UserController {
     return users;
   }
 
-  static Future<bool> forgotPasswordController(
-      String email, String password) async {
-    var jsonData = json.encode({"password": password});
+  static Future<bool> forgotPasswordController(String email) async {
     String message;
     try {
-      var response = await http.patch(forgotPassword + email,
-          headers: {"Content-Type": "application/json"}, body: jsonData);
+      var response = await http.get(forgotPassword + email,
+          headers: {"Content-Type": "application/json"});
       if (response.statusCode == 200) {
         var jsonResponse = await jsonDecode(response.body);
         message = jsonResponse['message'];
