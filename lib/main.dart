@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:win75/models/route_generator.dart';
 import 'package:win75/screens/SplashScreen.dart';
 import 'package:win75/screens/connection.dart';
+import 'package:win75/utilities/auth.dart';
 import 'package:win75/utilities/constants.dart';
 
 import 'models/User.dart';
@@ -35,9 +36,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ));
+    getCurrentUser();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     connectivitySubscription = Connectivity()
         .onConnectivityChanged
@@ -49,22 +48,42 @@ class _MyAppState extends State<MyApp> {
         nav.currentState.push(
             MaterialPageRoute(builder: (BuildContext _) => SplashScreen()));
       }
-
       _previousResult = connectivityResult;
+    });
+  }
+
+  User user;
+  final AuthService authService = AuthService();
+  void getCurrentUser() async {
+    User result = await authService.getUserFromSharedPreferences();
+    setState(() {
+      user = result;
+      String name = user.username;
+      print('name: $name');
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
     return ChangeNotifierProvider<User>.value(
       value: User(
-          points: 30,
-          inWalletCash: 100,
-          mobile: "90120930101",
-          email: "loa",
-          username: "lolo",
-          image:
-              'https://i-cdn.phonearena.com/images/articles/99670-image/Android-4.4-KitKat-official-wallpapers-available-for-download-here.jpg'),
+          uid: user != null ? user.uid : null,
+          games: user != null ? user.games : null,
+          transactions: user != null ? user.transactions : null,
+          referralCode: user != null ? user.referralCode : null,
+          totalAmountSpent: user != null ? user.totalAmountSpent : null,
+          totalAmountWon: user != null ? user.totalAmountWon : null,
+          disabled: user != null ? user.disabled : null,
+          joinedOn: user != null ? user.joinedOn : null,
+          points: user != null ? user.points : null,
+          inWalletCash: user != null ? user.inWalletCash : null,
+          mobile: user != null ? user.mobile : null,
+          email: user != null ? user.email : null,
+          username: user != null ? user.username : null,
+          image: user != null ? user.image : null),
       child: MaterialApp(
         navigatorKey: nav,
         theme: kDefaultTheme,

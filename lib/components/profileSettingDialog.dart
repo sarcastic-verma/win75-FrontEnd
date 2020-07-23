@@ -153,13 +153,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                   //     (await service.getUserFromSharedPreferences())
                   //         .username;
                   // print('oldName $oldUser');
-                  service.storeUserInSharedPreferences(
-                      username: user.username,
-                      image: user.image,
-                      joinedOn: user.joinedOn,
-                      uid: user.uid,
-                      mobile: user.mobile,
-                      email: user.email);
+                  service.storeUserInSharedPreferences(user: user);
                 }
                 print('Profile Detail updated');
                 // setState(() {
@@ -549,7 +543,8 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                                             )
                                           : ((user.image != ''
                                               ? NetworkImage(
-                                                  user.image,
+                                                  user.image.replaceAll(
+                                                      'localhost', '10.0.2.2'),
                                                 )
                                               : AssetImage('img/user2.jpg'))),
                                     ),
@@ -603,16 +598,12 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                                       email: user.email,
                                     );
                                     service.storeUserInSharedPreferences(
-                                        username: input,
-                                        image: user.image,
-                                        joinedOn: user.joinedOn,
-                                        uid: user.uid,
-                                        mobile: user.mobile,
-                                        email: user.email);
+                                        user: user);
                                   },
                                 ),
                                 new TextFormField(
                                   enabled: false,
+
                                   style: TextStyle(
                                       color: Theme.of(context).hintColor),
                                   keyboardType: TextInputType.emailAddress,

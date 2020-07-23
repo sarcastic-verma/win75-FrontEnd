@@ -148,11 +148,11 @@ class _PagesState extends State<Pages> {
             )
           ],
           child: CircleAvatar(
-            backgroundImage: user.image != ''
+            backgroundImage: user.image != null
                 ? NetworkImage(
-                    user.image,
+                    user.image.replaceAll('localhost', '10.0.2.2'),
                   )
-                : AssetImage('img/user2.jpg'),
+                : AssetImage('assets/images/userDefault.jpeg'),
           ),
         );
     return DefaultTabController(

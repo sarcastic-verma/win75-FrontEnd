@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:win75/components/profileSettingDialog.dart';
 import 'package:win75/models/User.dart';
-import 'package:win75/screens/intro.dart';
+import 'package:win75/screens/authentication.dart';
 import 'package:win75/utilities/UiIcons.dart';
 import 'package:win75/utilities/auth.dart';
 
@@ -15,7 +15,7 @@ class AccountSettings extends StatefulWidget {
 class _AccountSettingsState extends State<AccountSettings> {
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<User>(context);
+    User user = Provider.of<User>(context, listen: true);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -48,11 +48,11 @@ class _AccountSettingsState extends State<AccountSettings> {
                       margin:
                           EdgeInsets.only(top: 12.5, bottom: 12.5, right: 20),
                       child: CircleAvatar(
-                        backgroundImage: user.image != ''
+                        backgroundImage: user.image != null
                             ? NetworkImage(
-                                user.image,
+                                user.image.replaceAll('localhost', '10.0.2.2'),
                               )
-                            : AssetImage('img/user2.jpg'),
+                            : AssetImage('assets/images/userDefault.jpeg'),
                       )),
                 ),
               ),
@@ -64,8 +64,8 @@ class _AccountSettingsState extends State<AccountSettings> {
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
                 trailing: Text(
-//                  user.username,
-                  Provider.of<User>(context, listen: false).username,
+//                  "d",
+                  user.username,
                   style: TextStyle(color: Theme.of(context).focusColor),
                 ),
               ),
@@ -77,6 +77,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
                 trailing: Text(
+//                  "s",
                   (user.email),
                   style: TextStyle(color: Theme.of(context).focusColor),
                 ),
@@ -89,6 +90,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                   style: Theme.of(context).textTheme.bodyText2,
                 ),
                 trailing: Text(
+//                  "s",
                   (user.mobile),
                   style: TextStyle(color: Theme.of(context).focusColor),
                 ),
@@ -100,7 +102,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 onTap: () async {
                   await AuthService().logOutUser();
                   Navigator.pushNamedAndRemoveUntil(
-                      context, IntroScreen.id, (route) => false);
+                      context, AuthScreen.id, (route) => false);
                 },
                 child: Container(
                   decoration: ShapeDecoration(

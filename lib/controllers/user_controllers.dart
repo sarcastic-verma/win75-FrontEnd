@@ -72,7 +72,6 @@ class UserController {
           username: jsonResponse['username'],
           email: jsonResponse['email'],
           joinedOn: jsonResponse['joinedOn'],
-          password: jsonResponse['password'],
           image: jsonResponse['image'],
           transactions: jsonResponse['transactions'],
           games: jsonResponse['games'],
@@ -104,7 +103,6 @@ class UserController {
           username: jsonResponse['username'],
           email: jsonResponse['email'],
           joinedOn: jsonResponse['joinedOn'],
-          password: jsonResponse['password'],
           image: jsonResponse['image'],
           transactions: jsonResponse['transactions'],
           games: jsonResponse['games'],
@@ -136,7 +134,6 @@ class UserController {
             username: item['username'],
             email: item['email'],
             joinedOn: item['joinedOn'],
-            password: item['password'],
             image: item['image'],
             transactions: item['transactions'],
             games: item['games'],
@@ -154,7 +151,7 @@ class UserController {
     return users;
   }
 
-  static Future<bool> forgotPasswordController(String email) async {
+  static Future<bool> forgotPasswordController({String email}) async {
     String message;
     try {
       var response = await http.get(forgotPassword + email,
@@ -163,7 +160,7 @@ class UserController {
         var jsonResponse = await jsonDecode(response.body);
         message = jsonResponse['message'];
       } else {
-        print(response);
+        print(response.body);
       }
     } catch (err) {
       print(err);
@@ -194,7 +191,6 @@ class UserController {
           username: jsonResponse['username'],
           email: jsonResponse['email'],
           joinedOn: jsonResponse['joinedOn'],
-          password: jsonResponse['password'],
           image: jsonResponse['image'],
           transactions: jsonResponse['transactions'],
           games: jsonResponse['games'],
@@ -202,6 +198,9 @@ class UserController {
         );
       } else {
         print(response.statusCode);
+        if (response.statusCode == 403) {
+          return [response.body.substring(12, response.body.length - 2)];
+        }
       }
     } catch (e) {
       print(e);
@@ -213,6 +212,7 @@ class UserController {
       {File image,
       String mobile,
       String email,
+      String referralCode,
       String password,
       String username}) async {
     String token;
@@ -223,6 +223,7 @@ class UserController {
       FormData formData = new FormData.fromMap({
         "username": username,
         "email": email,
+        "referralCode": referralCode ?? null,
         "mobile": mobile,
         "password": password,
         "image": await MultipartFile.fromFile(
@@ -236,7 +237,9 @@ class UserController {
           signUp,
           data: formData,
         );
-        var jsonResponse = await json.decode(response.data);
+        print("lol");
+        token = response.data['token'];
+        var jsonResponse = response.data;
         jsonResponse = jsonResponse['user'];
         user = User(
           uid: jsonResponse['_id'],
@@ -249,7 +252,6 @@ class UserController {
           username: jsonResponse['username'],
           email: jsonResponse['email'],
           joinedOn: jsonResponse['joinedOn'],
-          password: jsonResponse['password'],
           image: jsonResponse['image'],
           transactions: jsonResponse['transactions'],
           games: jsonResponse['games'],
@@ -257,12 +259,15 @@ class UserController {
         );
       } on DioError catch (error) {
         print(error.response);
+        if (error.error == 'Http status error [422]')
+          return [error.response.data['message']];
       }
     } else {
       FormData formData = new FormData.fromMap({
         "username": username,
         "email": email,
         "password": password,
+        "referralCode": referralCode ?? null,
         "mobile": mobile
       });
       try {
@@ -270,8 +275,10 @@ class UserController {
           signUp,
           data: formData,
         );
-        var jsonResponse = await json.decode(response.data);
+        print(response.statusCode);
+        var jsonResponse = response.data;
         jsonResponse = jsonResponse['user'];
+        token = response.data['token'];
         user = User(
           uid: jsonResponse['_id'],
           referralCode: jsonResponse['referralCode'],
@@ -283,14 +290,16 @@ class UserController {
           username: jsonResponse['username'],
           email: jsonResponse['email'],
           joinedOn: jsonResponse['joinedOn'],
-          password: jsonResponse['password'],
           image: jsonResponse['image'],
           transactions: jsonResponse['transactions'],
           games: jsonResponse['games'],
           disabled: jsonResponse['disabled'],
         );
       } on DioError catch (error) {
-        print(error.response);
+        print("in else");
+        print(error.error);
+        if (error.error == 'Http status error [422]')
+          return [error.response.data['message']];
       }
     }
     return [token, user];
@@ -324,7 +333,6 @@ class UserController {
           username: jsonResponse['username'],
           email: jsonResponse['email'],
           joinedOn: jsonResponse['joinedOn'],
-          password: jsonResponse['password'],
           image: jsonResponse['image'],
           transactions: jsonResponse['transactions'],
           games: jsonResponse['games'],
@@ -358,7 +366,6 @@ class UserController {
             username: item['username'],
             email: item['email'],
             joinedOn: item['joinedOn'],
-            password: item['password'],
             image: item['image'],
             transactions: item['transactions'],
             games: item['games'],
@@ -392,7 +399,6 @@ class UserController {
           username: jsonResponse['username'],
           email: jsonResponse['email'],
           joinedOn: jsonResponse['joinedOn'],
-          password: jsonResponse['password'],
           image: jsonResponse['image'],
           transactions: jsonResponse['transactions'],
           games: jsonResponse['games'],

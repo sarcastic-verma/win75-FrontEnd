@@ -29,6 +29,7 @@ class TransactionControllers {
       return false;
     }
   }
+
   Future addPoints(int amount) async {
     var jsonData = json.encode({"amount": amount});
     try {
@@ -49,6 +50,7 @@ class TransactionControllers {
       return false;
     }
   }
+
   Future reducePoints(int amount) async {
     var jsonData = json.encode({"amount": amount});
     try {
@@ -69,6 +71,7 @@ class TransactionControllers {
       return false;
     }
   }
+
   Future addMoney(int amount) async {
     var jsonData = json.encode({"amount": amount});
     try {

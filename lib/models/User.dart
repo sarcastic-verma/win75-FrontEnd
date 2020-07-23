@@ -13,7 +13,6 @@ class User extends ChangeNotifier {
   String email;
   String image;
   int inWalletCash;
-  String password;
   bool disabled;
   String joinedOn;
   User(
@@ -27,7 +26,6 @@ class User extends ChangeNotifier {
       @required this.totalAmountWon,
       @required this.transactions,
       @required this.uid,
-      @required this.password,
       @required this.image,
       @required this.disabled,
       @required this.joinedOn,
@@ -49,6 +47,24 @@ class User extends ChangeNotifier {
     this.image = image;
     this.joinedOn = joinedOn;
     this.inWalletCash = inWalletCash;
+    notifyListeners();
+  }
+
+  void addUser({User user}) {
+    this.uid = user.uid;
+    this.mobile = user.mobile;
+    this.username = user.username;
+    this.email = user.email;
+    this.image = user.image;
+    this.joinedOn = user.joinedOn;
+    this.inWalletCash = user.inWalletCash;
+    this.points = user.points;
+    this.totalAmountWon = user.totalAmountWon;
+    this.totalAmountSpent = user.totalAmountSpent;
+    this.games = user.games;
+    this.transactions = user.transactions;
+    this.referralCode = user.referralCode;
+    this.disabled = user.disabled;
     notifyListeners();
   }
 }

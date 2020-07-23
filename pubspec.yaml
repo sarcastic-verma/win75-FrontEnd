@@ -39,6 +39,7 @@ dependencies:
   provider: ^4.0.5+1
   flutter_spinkit: ^4.1.2
   circular_countdown_timer: ^0.0.4
+  rflutter_alert: ^1.0.3
   flip_box_bar_plus: ^0.9.3
   ntp: ^1.0.6
   fluttertoast: ^3.1.3
