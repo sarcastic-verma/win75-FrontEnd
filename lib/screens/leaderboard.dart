@@ -84,7 +84,7 @@ class LeaderBoard extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 14),
                             child: Text(
-                              "S.No",
+                              "Rank",
                               textAlign: TextAlign.left,
                               style: Theme.of(context)
                                   .textTheme

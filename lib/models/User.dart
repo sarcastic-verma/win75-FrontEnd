@@ -32,20 +32,14 @@ class User extends ChangeNotifier {
       @required this.username});
   void updateUser(
       {int inWalletCash,
-      String uid,
       String mobile,
       String username,
-      String email,
       String image,
-      bool disabled,
-      String joinedOn,
       int points}) {
-    this.uid = uid;
     this.mobile = mobile;
     this.username = username;
-    this.email = email;
     this.image = image;
-    this.joinedOn = joinedOn;
+    this.points = points;
     this.inWalletCash = inWalletCash;
     notifyListeners();
   }

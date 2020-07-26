@@ -1,4 +1,4 @@
-const base = 'http://10.0.2.2:5000/api/';
+const base = 'https://win75.herokuapp.com/api/';
 const gameBase = base + 'game/';
 const transactionBase = base + 'transaction/';
 const userBase = base + 'users/';

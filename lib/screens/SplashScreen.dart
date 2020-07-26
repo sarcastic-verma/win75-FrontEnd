@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:win75/components/pages.dart';
 
@@ -37,11 +38,9 @@ class _Splash extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(
-          strokeWidth: 10,
-          value: null,
-        ),
-      ),
+          child: SpinKitCubeGrid(
+        color: Theme.of(context).accentColor,
+      )),
     );
   }
 
@@ -53,10 +52,14 @@ class _Splash extends State<SplashScreen> {
 
   Future<void> _handleStartScreen() async {
     String jwt = await storage.read(key: "jwt");
-    if (jwt == null) jwt = "";
+    if (jwt == null) {
+      print("jwt is null");
+      jwt = "";
+    }
     if (jwt != "") {
       List jwtList = jwt.split(".");
       if (jwtList.length != 3) {
+        print("jwt is invalid");
         Navigator.popAndPushNamed(context, AuthScreen.id);
       } else {
 //        var payload = json.decode(
@@ -66,7 +69,7 @@ class _Splash extends State<SplashScreen> {
 //            ),
 //          ),
 //        );
-        Navigator.popAndPushNamed(context, Pages.id);
+        Navigator.popAndPushNamed(context, Pages.id, arguments: 1);
 //        if (DateTime.fromMillisecondsSinceEpoch(payload["exp"] * 1000)
 //            .isAfter(DateTime.now())) {
 //          Navigator.popAndPushNamed(context, Pages.id);

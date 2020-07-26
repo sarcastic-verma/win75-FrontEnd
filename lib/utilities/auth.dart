@@ -63,19 +63,9 @@ class AuthService {
       await prefs.remove('uid');
       await prefs.remove('mobile');
       await prefs.remove('joinedOn');
+      print("log out kr dia");
     } catch (err) {
       print(err);
-    }
-  }
-
-  Future updateUsernameImage({
-    username,
-    mobile,
-    password,
-    imgUrl,
-  }) async {
-    try {} catch (e) {
-      print("caught error: ${e.toString()}");
     }
   }
 }

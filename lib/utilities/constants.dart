@@ -20,7 +20,7 @@ AlertStyle kAlertStyle = AlertStyle(
 var kDefaultTheme = ThemeData(
     primaryColor: Colors.white,
     brightness: Brightness.light,
-    accentColor: Colors.lightGreenAccent,
+    accentColor: Colors.green,
     focusColor: Colors.purpleAccent,
     inputDecorationTheme: InputDecorationTheme(
       focusedBorder: OutlineInputBorder(
@@ -69,9 +69,9 @@ var kDefaultTheme = ThemeData(
           color: Colors.black,
           fontFamily: 'karla'),
       subtitle1: TextStyle(
-          fontSize: 15.0,
+          fontSize: 14.5,
           fontWeight: FontWeight.w500,
-          color: Colors.black,
+          color: Colors.purple,
           fontFamily: 'karla'),
       headline6: TextStyle(
           fontSize: 16.0,

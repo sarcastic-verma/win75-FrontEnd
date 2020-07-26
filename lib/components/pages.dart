@@ -6,6 +6,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:win75/models/User.dart';
 import 'package:win75/screens/AccountSettings.dart';
+import 'package:win75/screens/FAQ.dart';
+import 'package:win75/screens/authentication.dart';
 import 'package:win75/screens/battlefield.dart';
 import 'package:win75/screens/leaderboard.dart';
 import 'package:win75/screens/playground.dart';
@@ -23,7 +25,7 @@ class Pages extends StatefulWidget {
 
   Pages({
     Key key,
-    this.currentTab,
+    @required this.currentTab,
   });
 
   @override
@@ -76,7 +78,7 @@ class _PagesState extends State<Pages> {
       widget.selectedTab = tabItem;
       switch (tabItem) {
         case 0:
-          widget.currentTitle = 'Account Settings';
+          widget.currentTitle = 'Account';
           widget.currentPage =
               WillPopScope(onWillPop: onWillPop, child: AccountSettings());
           break;
@@ -101,7 +103,8 @@ class _PagesState extends State<Pages> {
 
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<User>(context);
+    User user = Provider.of<User>(context, listen: true);
+    print(user.inWalletCash);
     PopupMenuButton _itemDown() => PopupMenuButton(
           padding: EdgeInsets.all(0),
           elevation: 10,
@@ -116,7 +119,8 @@ class _PagesState extends State<Pages> {
               value: 'Value1',
               child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed('/Tabs', arguments: 4);
+                    Navigator.of(context)
+                        .popAndPushNamed(Pages.id, arguments: 0);
                   },
 //                  radius: ,
                   child: Text(
@@ -127,9 +131,11 @@ class _PagesState extends State<Pages> {
             PopupMenuItem<String>(
               value: 'Value2',
               child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, FAQ.id);
+                  },
                   child: Text(
-                    'Help',
+                    "FAQ's and support",
                     textAlign: TextAlign.center,
                   )),
             ),
@@ -139,7 +145,7 @@ class _PagesState extends State<Pages> {
                   onTap: () async {
                     await AuthService().logOutUser();
                     Navigator.pushNamedAndRemoveUntil(
-                        context, '/', (route) => false);
+                        context, AuthScreen.id, (route) => false);
                   },
                   child: Text(
                     'Logout',
@@ -258,14 +264,17 @@ class _PagesState extends State<Pages> {
                         fontSize: 26),
                   ),
                 ),
-                actions: <Widget>[
-                  Container(
-                    width: 30,
-                    height: 30,
-                    margin: EdgeInsets.only(top: 12.5, bottom: 12.5, right: 10),
-                    child: _itemDown(),
-                  ),
-                ],
+                actions: widget.currentTab == 3
+                    ? <Widget>[
+                        Container(
+                          width: 30,
+                          height: 30,
+                          margin: EdgeInsets.only(
+                              top: 12.5, bottom: 12.5, right: 10),
+                          child: _itemDown(),
+                        ),
+                      ]
+                    : null,
               ),
         body: widget.currentPage,
         bottomNavigationBar: FlipBoxBarPlus(

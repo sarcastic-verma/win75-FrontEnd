@@ -11,29 +11,32 @@ import 'package:win75/utilities/end-points.dart';
 final storage = SS.FlutterSecureStorage();
 
 class UserController {
-  static Future<bool> changeUserPassword(
+  static Future<String> changeUserPassword(
       {String currentPassword, String newPassword}) async {
     String message;
     var jsonData = json.encode(
         {"newPassword": newPassword, "currentPassword": currentPassword});
     try {
       String token = await storage.read(key: 'jwt');
+      print(token);
       var response = await http.patch(changePassword,
           headers: {
             "Content-Type": "application/json",
-            "Autherization": 'Bearer $token'
+            HttpHeaders.authorizationHeader: 'Bearer $token'
           },
           body: jsonData);
       if (response.statusCode == 200) {
         var jsonResponse = await jsonDecode(response.body);
         message = jsonResponse['message'];
       } else {
-        print(response);
+        print(response.body);
+        print("in else");
+        message = response.body.substring(12, response.body.length - 2);
       }
     } catch (err) {
-      print(err);
+      message = "nani";
     }
-    return message == "Password updated";
+    return message;
   }
 
   static Future<User> editUser(

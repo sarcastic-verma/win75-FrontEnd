@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:win75/components/pages.dart';
+import 'package:win75/screens/FAQ.dart';
+import 'package:win75/screens/Rules.dart';
 import 'package:win75/screens/SplashScreen.dart';
 import 'package:win75/screens/authentication.dart';
 import 'package:win75/screens/battlefield.dart';
 import 'package:win75/screens/connection.dart';
+import 'package:win75/screens/games_history.dart';
 import 'package:win75/screens/intro.dart';
 import 'package:win75/screens/login.dart';
 import 'package:win75/screens/signup.dart';
+import 'package:win75/screens/transactionHistory.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -16,9 +20,16 @@ class RouteGenerator {
     switch (settings.name) {
       case SplashScreen.id:
         return MaterialPageRoute(builder: (_) => SplashScreen());
-
+      case FAQ.id:
+        return MaterialPageRoute(builder: (_) => FAQ());
+      case Rules.id:
+        return MaterialPageRoute(builder: (_) => Rules());
       case AuthScreen.id:
         return MaterialPageRoute(builder: (_) => AuthScreen());
+      case GamesHistory.id:
+        return MaterialPageRoute(builder: (_) => GamesHistory());
+      case TransactionHistory.id:
+        return MaterialPageRoute(builder: (_) => TransactionHistory());
 
 //      case EditProfileScreen.id:
 //        return MaterialPageRoute(builder: (_) => EditProfileScreen());
@@ -42,7 +53,7 @@ class RouteGenerator {
       case Pages.id:
         return MaterialPageRoute(
             builder: (_) => Pages(
-                  currentTab: 1,
+                  currentTab: args,
                 ));
       case IntroScreen.id:
         return MaterialPageRoute(builder: (_) => IntroScreen());

@@ -18,12 +18,14 @@ class _BattleFieldScreenState extends State<BattleFieldScreen> {
   DateTime _myTime;
   Future getTime() async {
     _myTime = await NTP.now();
+    print(_myTime);
+    return _myTime;
   }
 
   @override
   void initState() {
+    getTime();
     super.initState();
-//    getTime();
   }
 
   @override
@@ -39,7 +41,7 @@ class _BattleFieldScreenState extends State<BattleFieldScreen> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return SafeArea(
-                child: (_myTime.hour >= 1 && _myTime.hour <= 18)
+                child: (snapshot.data.hour >= 1 && snapshot.data.hour <= 18)
                     ? Stack(
                         children: [
                           Container(
