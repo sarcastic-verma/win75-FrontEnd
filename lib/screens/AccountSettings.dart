@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:win75/components/profileSettingDialog.dart';
+import 'package:win75/controllers/transaction_controllers.dart';
 import 'package:win75/controllers/user_controllers.dart';
 import 'package:win75/models/User.dart';
 import 'package:win75/screens/FAQ.dart';
@@ -23,7 +24,8 @@ class AccountSettings extends StatefulWidget {
 
 class _AccountSettingsState extends State<AccountSettings> {
   final _alertFormKey = GlobalKey<FormState>();
-  final _walletFormKey = GlobalKey<FormState>();
+  final _addWalletFormKey = GlobalKey<FormState>();
+  final _redeemWalletFormKey = GlobalKey<FormState>();
   final TextEditingController addAmountController = TextEditingController();
   final TextEditingController redeemAmountController = TextEditingController();
   final TextEditingController alertPasswordController = TextEditingController();
@@ -34,6 +36,7 @@ class _AccountSettingsState extends State<AccountSettings> {
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: true);
+    print(user.inWalletCash);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -94,11 +97,13 @@ class _AccountSettingsState extends State<AccountSettings> {
                           width: 65,
                           height: 65,
                           child: CircleAvatar(
-                            backgroundImage: user.image != ''
-                                ? NetworkImage(
-                                    user.image,
-                                  )
-                                : AssetImage('assets/images/userDefault.jpeg'),
+                            backgroundImage:
+//                            user.image != ''
+//                                ? NetworkImage(
+//                                    user.image,
+//                                  )
+//                                :
+                                AssetImage('assets/images/userDefault.jpeg'),
                           )),
                     ],
                   ),
@@ -138,9 +143,59 @@ class _AccountSettingsState extends State<AccountSettings> {
                                             color: Colors.white, fontSize: 20),
                                       ),
                                       onPressed: () async {
-                                        if (_walletFormKey.currentState
+                                        if (_addWalletFormKey.currentState
                                             .validate()) {
-                                          Navigator.pop(context);
+                                          Fluttertoast.showToast(
+                                              msg: "Processing",
+                                              backgroundColor: Colors.black,
+                                              textColor: Colors.white);
+                                          List result;
+                                          result = await TransactionControllers
+                                              .addMoney(
+                                                  amount: int.parse(
+                                                      addAmountController
+                                                          .text));
+                                          if (result[0]) {
+                                            print(result[1].username);
+                                            Fluttertoast.showToast(
+                                                msg: "Request Successful!!",
+                                                backgroundColor: Colors.black,
+                                                textColor: Colors.white);
+                                            auth.updateUserSharedPreferences(
+                                                inWalletCash:
+                                                    result[1].inWalletCash,
+                                                username: user.username,
+                                                points: user.points,
+                                                transactions:
+                                                    result[1].transactions,
+                                                totalAmountWon:
+                                                    user.totalAmountWon,
+                                                totalAmountSpent:
+                                                    user.totalAmountSpent,
+                                                mobile: user.mobile,
+                                                games: user.games);
+                                            Provider.of<User>(context,
+                                                    listen: false)
+                                                .updateUser(
+                                                    inWalletCash:
+                                                        result[1].inWalletCash,
+                                                    points: user.points,
+                                                    username: user.username,
+                                                    transactions:
+                                                        result[1].transactions,
+                                                    games: user.games,
+                                                    mobile: user.mobile);
+                                            Navigator.pop(context);
+                                          } else {
+                                            Fluttertoast.showToast(
+                                                msg:
+                                                    "Something failed, try again later.",
+                                                backgroundColor: Colors.black,
+                                                textColor: Colors.white);
+                                          }
+                                          setState(() {
+                                            addAmountController.clear();
+                                          });
                                         }
                                       },
                                       color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -156,7 +211,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                         padding: const EdgeInsets.only(
                                             top: 6, bottom: 20.0),
                                         child: Form(
-                                          key: _walletFormKey,
+                                          key: _addWalletFormKey,
                                           child: TextFormField(
                                               controller: addAmountController,
                                               keyboardType: TextInputType
@@ -170,6 +225,17 @@ class _AccountSettingsState extends State<AccountSettings> {
                                               validator: (value) {
                                                 if (value.isEmpty) {
                                                   return 'Please enter amount';
+                                                } else if (value[0] == '0') {
+                                                  return 'Amount must not start with 0.';
+                                                } else if (int.tryParse(
+                                                            value) !=
+                                                        null &&
+                                                    int.tryParse(value) < 0) {
+                                                  return 'Amount must be greater than 0';
+                                                } else if (int.tryParse(
+                                                        value) ==
+                                                    null) {
+                                                  return 'Amount should only have numbers';
                                                 }
                                                 return null;
                                               }),
@@ -208,9 +274,60 @@ class _AccountSettingsState extends State<AccountSettings> {
                                             color: Colors.white, fontSize: 20),
                                       ),
                                       onPressed: () async {
-                                        if (_walletFormKey.currentState
+                                        if (_redeemWalletFormKey.currentState
                                             .validate()) {
-                                          Navigator.pop(context);
+                                          Fluttertoast.showToast(
+                                              msg: "Processing!!",
+                                              backgroundColor: Colors.black,
+                                              textColor: Colors.white);
+                                          List result;
+                                          result = await TransactionControllers
+                                              .redeemMoney(
+                                                  amount: int.parse(
+                                                      redeemAmountController
+                                                          .text));
+                                          if (result[0]) {
+                                            print(result[1]);
+                                            print(result[1].transactions);
+                                            auth.updateUserSharedPreferences(
+                                                inWalletCash:
+                                                    result[1].inWalletCash,
+                                                username: user.username,
+                                                points: user.points,
+                                                transactions:
+                                                    result[1].transactions,
+                                                totalAmountWon:
+                                                    user.totalAmountWon,
+                                                totalAmountSpent:
+                                                    user.totalAmountSpent,
+                                                mobile: user.mobile,
+                                                games: user.games);
+                                            Provider.of<User>(context,
+                                                    listen: false)
+                                                .updateUser(
+                                                    inWalletCash:
+                                                        result[1].inWalletCash,
+                                                    transactions:
+                                                        result[1].transactions,
+                                                    games: user.games,
+                                                    points: user.points,
+                                                    username: user.username,
+                                                    mobile: user.mobile);
+                                            Fluttertoast.showToast(
+                                                msg: "Request Successful!!",
+                                                backgroundColor: Colors.black,
+                                                textColor: Colors.white);
+                                            Navigator.pop(context);
+                                          } else {
+                                            Fluttertoast.showToast(
+                                                msg:
+                                                    "Something failed, try again later.",
+                                                backgroundColor: Colors.black,
+                                                textColor: Colors.white);
+                                          }
+                                          setState(() {
+                                            redeemAmountController.clear();
+                                          });
                                         }
                                       },
                                       color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -218,6 +335,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                     ),
                                   ],
                                   title: "Enter redeem amount",
+                                  desc: "You shall receive it in 48 hours!!",
                                   content: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -226,7 +344,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                         padding: const EdgeInsets.only(
                                             top: 6, bottom: 20.0),
                                         child: Form(
-                                          key: _walletFormKey,
+                                          key: _redeemWalletFormKey,
                                           child: TextFormField(
                                               controller:
                                                   redeemAmountController,
@@ -241,6 +359,23 @@ class _AccountSettingsState extends State<AccountSettings> {
                                               validator: (value) {
                                                 if (value.isEmpty) {
                                                   return 'Please enter amount';
+                                                } else if (value[0] == '0') {
+                                                  return 'Amount must not start with 0.';
+                                                } else if (int.tryParse(
+                                                            value) !=
+                                                        null &&
+                                                    int.tryParse(value) < 0) {
+                                                  return 'Amount must be greater than 0';
+                                                } else if (int.tryParse(
+                                                            value) !=
+                                                        null &&
+                                                    int.tryParse(value) >
+                                                        user.inWalletCash) {
+                                                  return 'Insufficient funds';
+                                                } else if (int.tryParse(
+                                                        value) ==
+                                                    null) {
+                                                  return 'Amount should only have numbers';
                                                 }
                                                 return null;
                                               }),
@@ -365,11 +500,9 @@ class _AccountSettingsState extends State<AccountSettings> {
                               margin: EdgeInsets.only(
                                   top: 12.5, bottom: 12.5, right: 20),
                               child: CircleAvatar(
-                                backgroundImage: user.image != null
-                                    ? NetworkImage(
-                                        user.image,
-                                      )
-                                    : AssetImage(
+                                backgroundImage:
+//
+                                    AssetImage(
                                         'assets/images/userDefault.jpeg'),
                               )),
                         ),
@@ -597,7 +730,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                       ListTile(
                         leading: Icon(UiIcons.settings_1),
                         title: Text(
-                          'Generals',
+                          'General',
                           style: Theme.of(context).textTheme.headline5,
                         ),
                       ),
@@ -615,7 +748,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                             ),
                             SizedBox(width: 10),
                             Text(
-                              "FAQ's and support",
+                              "FAQs and support",
                               style: Theme.of(context).textTheme.headline6,
                             ),
                           ],

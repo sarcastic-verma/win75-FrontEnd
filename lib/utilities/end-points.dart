@@ -8,11 +8,12 @@ const playerSummaryBase = base + 'playerSummary/';
 /////////////////Game Routes//////////////////
 
 const getGameByIdCa = gameBase;
-const getGamesByUserIdCa = gameBase + 'user/';
+const getGamesByUserIdCa = gameBase + 'user';
 const endGameCa = gameBase + 'endgame/';
 ///////////////Transaction Routes////////////////
 
 const addMoneyCa = transactionBase + 'add';
+const getTransactionByUserIdCa = transactionBase + 'getByUserId';
 const redeemMoneyCa = transactionBase + 'redeem';
 const addPointsCa = transactionBase + 'addPoints';
 const reducePointsCa = transactionBase + 'reducePoints';

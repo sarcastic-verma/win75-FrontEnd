@@ -39,7 +39,7 @@ class UserController {
     return message;
   }
 
-  static Future<User> editUser(
+  static Future<List<dynamic>> editUser(
       {File image, String mobile, String email, String username}) async {
     User user;
     Dio dio = Dio();
@@ -88,12 +88,13 @@ class UserController {
           {"username": username, "email": email, "mobile": mobile});
       try {
         String token = await storage.read(key: "jwt");
-        var response = await dio.post(signUp,
+        var response = await dio.patch(editUserCa,
             data: formData,
             options: Options(
-              headers: {"Autherization": "Bearer $token"},
+              headers: {HttpHeaders.authorizationHeader: "Bearer $token"},
             ));
-        var jsonResponse = await json.decode(response.data);
+        var jsonResponse = await response.data;
+        print(response.data);
         jsonResponse = jsonResponse['user'];
         user = User(
           uid: jsonResponse['_id'],
@@ -112,10 +113,11 @@ class UserController {
           disabled: jsonResponse['disabled'],
         );
       } on DioError catch (error) {
-        print(error.response);
+        print(error.response.data['message']);
+        return [error.response.data['message']];
       }
     }
-    return user;
+    return ["success", user];
   }
 
   static Future<List<User>> fetchLeaderBoard() async {
@@ -308,47 +310,47 @@ class UserController {
     return [token, user];
   }
 
-  static Future<List<dynamic>> userSignUp(
-      {String mobile, String email, String password, String username}) async {
-    var jsonData = json.encode({
-      "password": password,
-      "mobile": mobile,
-      "email": email,
-      "username": username
-    });
-    String token;
-    User user;
-    try {
-      var response = await http.post(signUp,
-          headers: {"Content-Type": "application/json"}, body: jsonData);
-      if (response.statusCode == 200) {
-        var jsonResponse = await jsonDecode(response.body);
-        token = jsonResponse["token"];
-        jsonResponse = jsonResponse["user"];
-        user = User(
-          uid: jsonResponse['_id'],
-          referralCode: jsonResponse['referralCode'],
-          points: jsonResponse['points'],
-          mobile: jsonResponse['mobile'],
-          totalAmountSpent: jsonResponse['totalAmountSpent'],
-          totalAmountWon: jsonResponse['totalAmountWon'],
-          inWalletCash: jsonResponse['inWalletCash'],
-          username: jsonResponse['username'],
-          email: jsonResponse['email'],
-          joinedOn: jsonResponse['joinedOn'],
-          image: jsonResponse['image'],
-          transactions: jsonResponse['transactions'],
-          games: jsonResponse['games'],
-          disabled: jsonResponse['disabled'],
-        );
-      } else {
-        print(response.statusCode);
-      }
-    } catch (e) {
-      print(e);
-    }
-    return [token, user];
-  }
+//  static Future<List<dynamic>> userSignUp(
+//      {String mobile, String email, String password, String username}) async {
+//    var jsonData = json.encode({
+//      "password": password,
+//      "mobile": mobile,
+//      "email": email,
+//      "username": username
+//    });
+//    String token;
+//    User user;
+//    try {
+//      var response = await http.post(signUp,
+//          headers: {"Content-Type": "application/json"}, body: jsonData);
+//      if (response.statusCode == 200) {
+//        var jsonResponse = await jsonDecode(response.body);
+//        token = jsonResponse["token"];
+//        jsonResponse = jsonResponse["user"];
+//        user = User(
+//          uid: jsonResponse['_id'],
+//          referralCode: jsonResponse['referralCode'],
+//          points: jsonResponse['points'],
+//          mobile: jsonResponse['mobile'],
+//          totalAmountSpent: jsonResponse['totalAmountSpent'],
+//          totalAmountWon: jsonResponse['totalAmountWon'],
+//          inWalletCash: jsonResponse['inWalletCash'],
+//          username: jsonResponse['username'],
+//          email: jsonResponse['email'],
+//          joinedOn: jsonResponse['joinedOn'],
+//          image: jsonResponse['image'],
+//          transactions: jsonResponse['transactions'],
+//          games: jsonResponse['games'],
+//          disabled: jsonResponse['disabled'],
+//        );
+//      } else {
+//        print(response.statusCode);
+//      }
+//    } catch (e) {
+//      print(e);
+//    }
+//    return [token, user];
+//  }
 
   static Future<List<User>> getEveryUsers() async {
     List<User> users = [];

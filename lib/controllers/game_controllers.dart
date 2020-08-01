@@ -2,6 +2,7 @@
 //const getGamesByUserIdRouteCa = gameBase + 'user/';
 //const endGameRouteCa = gameBase + 'endgame/';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as SS;
 import 'package:http/http.dart' as http;
@@ -11,12 +12,12 @@ import 'package:win75/utilities/end-points.dart';
 final storage = SS.FlutterSecureStorage();
 
 class GameControllers {
-  Future getGameById(String gameId) async {
+  static Future getGameById(String gameId) async {
     Game game;
     try {
       String token = await storage.read(key: 'jwt');
       var response = await http.get(getGameByIdCa + gameId,
-          headers: {"Autherization": 'Bearer $token'});
+          headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         jsonResponse = jsonResponse['game'];
@@ -46,12 +47,12 @@ class GameControllers {
     }
   }
 
-  Future getGamesByUserId(String userId) async {
+  static Future getGamesByUserId() async {
     List<Game> games;
     try {
       String token = await storage.read(key: 'jwt');
-      var response = await http.get(getGamesByUserIdCa + userId,
-          headers: {"Autherization": 'Bearer $token'});
+      var response = await http.get(getGamesByUserIdCa,
+          headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
         var jsonResponse = await json.decode(response.body);
         jsonResponse = jsonResponse['games'];
@@ -83,11 +84,11 @@ class GameControllers {
     }
   }
 
-  Future endGame(String gameId) async {
+  static Future endGame(String gameId) async {
     try {
       String token = await storage.read(key: 'jwt');
-      var response = await http
-          .get(endGameCa + gameId, headers: {"Autherization": 'Bearer $token'});
+      var response = await http.get(endGameCa + gameId,
+          headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
       if (response.statusCode == 200) {
         return true;
       } else {

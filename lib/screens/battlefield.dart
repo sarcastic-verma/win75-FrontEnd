@@ -47,57 +47,66 @@ class _BattleFieldScreenState extends State<BattleFieldScreen> {
                           Container(
                             padding: EdgeInsets.all(10),
                             child: TabBarView(children: [
-                              GameTab(),
-                              GameTab(),
-                              GameTab(),
-                              GameTab(),
+                              GamePage(
+                                betAmount: 50,
+                                type: "battle",
+                              ),
+                              GamePage(
+                                betAmount: 100,
+                                type: "battle",
+                              ),
+                              GamePage(
+                                betAmount: 500,
+                                type: "battle",
+                              ),
+                              GamePage(
+                                betAmount: 1000,
+                                type: "battle",
+                              ),
                             ]),
                           ),
                           Positioned(
-                            bottom: 0,
-                            right: 0,
-                            left: 0,
+                            bottom: 10,
+//          right: 0,
+                            left: 50,
                             child: isComplete
-                                ? FlatButton(
-                                    onPressed: () {
+                                ? Padding(
+                                    padding: const EdgeInsets.all(28.0),
+                                    child: FlatButton(
+                                      color: Colors.yellow,
+                                      onPressed: () {
+                                        setState(() {
+                                          isComplete = false;
+                                        });
+                                      },
+                                      child: Text(
+                                        "Re-Start",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline5,
+                                      ),
+                                    ),
+                                  )
+                                : CircularCountDownTimer(
+                                    width:
+                                        MediaQuery.of(context).size.width / 2.9,
+                                    height:
+                                        MediaQuery.of(context).size.height / 6,
+                                    color: Colors.black,
+                                    fillColor: Colors.red,
+                                    strokeWidth: 15.0,
+                                    textStyle: TextStyle(
+                                        fontSize: 22.0,
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.bold),
+                                    isReverse: true,
+                                    duration: 3600,
+                                    onComplete: () {
+                                      print("Helo");
                                       setState(() {
-                                        isComplete = false;
+                                        isComplete = true;
                                       });
                                     },
-                                    child: Text("re-start"),
-                                  )
-                                : Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      CircularCountDownTimer(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                3,
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                5,
-                                        color: Colors.black,
-                                        fillColor: Colors.red,
-                                        strokeWidth: 15.0,
-                                        textStyle: TextStyle(
-                                            fontSize: 22.0,
-                                            color: Colors.black87,
-                                            fontWeight: FontWeight.bold),
-                                        isReverse: true,
-                                        duration: 15,
-                                        onComplete: () {
-                                          print("Helo");
-                                          setState(() {
-                                            isComplete = true;
-                                          });
-                                        },
-                                      ),
-                                      RaisedButton(
-                                        onPressed: () {},
-                                        child: Text("Submit"),
-                                      )
-                                    ],
                                   ),
                           )
                         ],

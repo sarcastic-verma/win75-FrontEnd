@@ -24,8 +24,42 @@ class AuthService {
   }
 
   //fetch the user details from shared preferences
+  Future updateUserSharedPreferences(
+      {String mobile,
+      String username,
+      int points,
+      int inWalletCash,
+      List games,
+      List transactions,
+      int totalAmountWon,
+      int totalAmountSpent}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> gamesCasted = games.cast<String>().toList();
+    List<String> transactionsCasted = transactions.cast<String>().toList();
+    await prefs.remove('username');
+    await prefs.remove('points');
+    await prefs.remove('games');
+    await prefs.remove('transactions');
+    await prefs.remove('totalAmountWon');
+    await prefs.remove('totalAmountSpent');
+    await prefs.remove('inWalletCash');
+    await prefs.remove('mobile');
+    //////////////////////////////////
+    /////////////////////////////////
+    await prefs.setString('username', username);
+    await prefs.setInt('inWalletCash', inWalletCash);
+    await prefs.setString('mobile', mobile);
+    await prefs.setInt('points', points);
+    await prefs.setStringList('games', gamesCasted);
+    await prefs.setStringList('transactions', transactionsCasted);
+    await prefs.setInt('totalAmountWon', totalAmountWon);
+    await prefs.setInt('totalAmountSpent', totalAmountSpent);
+  }
+
   Future<User> getUserFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(prefs.getInt('inWalletCash'));
+    print("in sp");
     return User(
       referralCode: prefs.getString('referralCode'),
       totalAmountWon: prefs.getInt('totalAmountWon'),

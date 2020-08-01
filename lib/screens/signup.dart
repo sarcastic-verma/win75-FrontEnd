@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as SS;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:win75/components/pages.dart';
@@ -27,17 +24,17 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final picker = ImagePicker();
-  File _image;
-  bool imageSelected = false;
+//  final picker = ImagePicker();
+//  File _image;
+//  bool imageSelected = false;
   bool isLoading = false;
-  Future getImage(ImageSource source) async {
-    final pickedFile = await picker.getImage(source: source);
-    setState(() {
-      imageSelected = true;
-      _image = File(pickedFile.path);
-    });
-  }
+//  Future getImage(ImageSource source) async {
+//    final pickedFile = await picker.getImage(source: source);
+//    setState(() {
+//      imageSelected = true;
+//      _image = File(pickedFile.path);
+//    });
+//  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -78,47 +75,49 @@ class _SignUpState extends State<SignUp> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       CircleAvatar(
-                        backgroundImage: imageSelected
-                            ? FileImage(_image)
-                            : AssetImage('assets/images/userDefault.jpeg'),
-                        radius: 45,
+                        backgroundImage:
+//                        imageSelected
+//                            ? FileImage(_image)
+//                            :
+                            AssetImage('assets/images/userDefault.jpeg'),
+                        radius: 55,
                       ),
-                      Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.camera),
-                                onPressed: () {
-                                  getImage(ImageSource.camera);
-                                },
-                              ),
-                              SizedBox(
-                                child: Divider(
-                                  color: Colors.black54,
-                                  thickness: 30,
-                                ),
-                                height: 30,
-                                width: 5,
-                              ),
-                              IconButton(
-                                  icon: Icon(Icons.image),
-                                  onPressed: () {
-                                    getImage(ImageSource.gallery);
-                                  })
-                            ],
-                          ),
-                          Text(
-                            "Choose a pic or go with default",
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline4
-                                .copyWith(
-                                    fontSize: 20, fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
+//                      Column(
+//                        children: [
+////                          Row(
+////                            mainAxisAlignment: MainAxisAlignment.center,
+////                            children: [
+////                              IconButton(
+////                                icon: Icon(Icons.camera),
+////                                onPressed: () {
+//////                                  getImage(ImageSource.camera);
+////                                },
+////                              ),
+////                              SizedBox(
+////                                child: Divider(
+////                                  color: Colors.black54,
+////                                  thickness: 30,
+////                                ),
+////                                height: 30,
+////                                width: 5,
+////                              ),
+////                              IconButton(
+////                                  icon: Icon(Icons.image),
+////                                  onPressed: () {
+////                                    getImage(ImageSource.gallery);
+////                                  })
+////                            ],
+////                          ),
+////                          Text(
+////                            "Choose a pic or go with default",
+////                            style: Theme.of(context)
+////                                .textTheme
+////                                .headline4
+////                                .copyWith(
+////                                    fontSize: 20, fontWeight: FontWeight.w700),
+////                          ),
+//                        ],
+//                      ),
                       SizedBox(
                         height: 20,
                       ),
@@ -251,7 +250,7 @@ class _SignUpState extends State<SignUp> {
                                 List responseLogin;
                                 responseLogin =
                                     await UserController.imageUserSignUp(
-                                        image: imageSelected ? _image : null,
+                                        image: null,
                                         password: passwordController.text,
                                         mobile: mobileController.text,
                                         username: usernameController.text,

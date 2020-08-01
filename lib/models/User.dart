@@ -34,12 +34,14 @@ class User extends ChangeNotifier {
       {int inWalletCash,
       String mobile,
       String username,
-      String image,
-      int points}) {
+      int points,
+      List games,
+      List transactions}) {
     this.mobile = mobile;
     this.username = username;
-    this.image = image;
     this.points = points;
+    this.transactions = transactions;
+    this.games = games;
     this.inWalletCash = inWalletCash;
     notifyListeners();
   }

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:win75/models/User.dart';
 import 'package:win75/screens/AccountSettings.dart';
 import 'package:win75/screens/FAQ.dart';
@@ -13,6 +14,7 @@ import 'package:win75/screens/leaderboard.dart';
 import 'package:win75/screens/playground.dart';
 import 'package:win75/utilities/UiIcons.dart';
 import 'package:win75/utilities/auth.dart';
+import 'package:win75/utilities/constants.dart';
 
 // ignore: must_be_immutable
 class Pages extends StatefulWidget {
@@ -36,6 +38,8 @@ class Pages extends StatefulWidget {
 
 class _PagesState extends State<Pages> {
   final AuthService authService = AuthService();
+  final _walletFormKey = GlobalKey<FormState>();
+  final TextEditingController addAmountController = TextEditingController();
   @override
   initState() {
     _selectTab(widget.currentTab);
@@ -124,7 +128,7 @@ class _PagesState extends State<Pages> {
                   },
 //                  radius: ,
                   child: Text(
-                    'Profile Setting',
+                    'Account',
                     textAlign: TextAlign.center,
                   )),
             ),
@@ -135,7 +139,7 @@ class _PagesState extends State<Pages> {
                     Navigator.popAndPushNamed(context, FAQ.id);
                   },
                   child: Text(
-                    "FAQ's and support",
+                    "FAQs and support",
                     textAlign: TextAlign.center,
                   )),
             ),
@@ -154,11 +158,13 @@ class _PagesState extends State<Pages> {
             )
           ],
           child: CircleAvatar(
-            backgroundImage: user.image != null
-                ? NetworkImage(
-                    user.image.replaceAll('localhost', '10.0.2.2'),
-                  )
-                : AssetImage('assets/images/userDefault.jpeg'),
+            backgroundImage:
+//            user.image != null
+//                ? NetworkImage(
+//                    user.image.replaceAll('localhost', '10.0.2.2'),
+//                  )
+//                :
+                AssetImage('assets/images/userDefault.jpeg'),
           ),
         );
     return DefaultTabController(
@@ -194,7 +200,71 @@ class _PagesState extends State<Pages> {
                                     ],
                                   ),
                                   GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Alert(
+                                              context: context,
+                                              buttons: [
+                                                DialogButton(
+                                                  child: Text(
+                                                    "Proceed",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20),
+                                                  ),
+                                                  onPressed: () async {
+                                                    if (_walletFormKey
+                                                        .currentState
+                                                        .validate()) {
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
+                                                  color: Color.fromRGBO(
+                                                      0, 179, 134, 1.0),
+                                                  radius: BorderRadius.circular(
+                                                      0.0),
+                                                ),
+                                              ],
+                                              title: "Enter amount to add",
+                                              content: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 6,
+                                                            bottom: 20.0),
+                                                    child: Form(
+                                                      key: _walletFormKey,
+                                                      child: TextFormField(
+                                                          controller:
+                                                              addAmountController,
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .numberWithOptions(),
+                                                          decoration: kTextFieldDecoration
+                                                              .copyWith(
+                                                                  prefixIcon:
+                                                                      Icon(UiIcons
+                                                                          .money),
+                                                                  hintText:
+                                                                      "Enter Amount",
+                                                                  labelText:
+                                                                      "Amount"),
+                                                          validator: (value) {
+                                                            if (value.isEmpty) {
+                                                              return 'Please enter amount';
+                                                            }
+                                                            return null;
+                                                          }),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              style: kAlertStyle)
+                                          .show();
+                                    },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 2),
