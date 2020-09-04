@@ -69,7 +69,9 @@ class _Splash extends State<SplashScreen> {
 //            ),
 //          ),
 //        );
+        print("pushing");
         Navigator.popAndPushNamed(context, Pages.id, arguments: 1);
+        print("puse=hed");
 //        if (DateTime.fromMillisecondsSinceEpoch(payload["exp"] * 1000)
 //            .isAfter(DateTime.now())) {
 //          Navigator.popAndPushNamed(context, Pages.id);

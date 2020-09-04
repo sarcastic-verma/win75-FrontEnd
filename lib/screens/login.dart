@@ -16,14 +16,14 @@ import 'package:win75/utilities/constants.dart';
 final storage = SS.FlutterSecureStorage();
 final AuthService auth = AuthService();
 
-class LoginIn extends StatefulWidget {
+class Login extends StatefulWidget {
   static const id = '/login';
 
   @override
-  _LoginInState createState() => _LoginInState();
+  _LoginState createState() => _LoginState();
 }
 
-class _LoginInState extends State<LoginIn> {
+class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
 
   final _alertFormKey = GlobalKey<FormState>();

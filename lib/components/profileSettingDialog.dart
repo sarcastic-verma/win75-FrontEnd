@@ -443,7 +443,7 @@ class _ProfileSettingsDialogState extends State<ProfileSettingsDialog> {
                                         email: user.email,
                                         username: usernameController.text);
                                     if (result.length == 2) {
-                                      auth.updateUserSharedPreferences(
+                                      await auth.updateUserSharedPreferences(
                                           inWalletCash: user.inWalletCash,
                                           username: result[1].username,
                                           points: user.points,

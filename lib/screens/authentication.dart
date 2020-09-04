@@ -12,13 +12,17 @@ class AuthScreen extends StatelessWidget {
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.all(24),
-//          decoration: BoxDecoration(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.white30, Colors.green])
 //            image: DecorationImage(
 //              colorFilter: ColorFilter.mode(Colors.purple, BlendMode.colorBurn),
 //              fit: BoxFit.cover,
 //              image: AssetImage("assets/images/login101.jpeg"),
 //            ),
-//          ),
+              ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -27,11 +31,18 @@ class AuthScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-                    "Brusque",
-//                    style: kAuthHeaderTextStyle,
+                    "Win75\n\nWorld's 1st game with",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headline1,
                   ),
                   Text(
-                    "\nSpread your creative in",
+                    "75% Winning Chance",
+                    style: Theme.of(context).textTheme.headline3,
+//                    style: kAuthTextStyle,
+                  ),
+                  Text(
+                    "*terms and conditions applied",
+                    style: Theme.of(context).textTheme.bodyText2,
 //                    style: kAuthTextStyle,
                   ),
                   SizedBox(
@@ -47,10 +58,10 @@ class AuthScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     padding: EdgeInsets.all(20),
-                    color: Colors.pink,
+                    color: Colors.lightGreenAccent,
                     child: Text("Login", style: TextStyle(fontSize: 20)),
                     onPressed: () {
-                      Navigator.pushNamed(context, LoginIn.id);
+                      Navigator.pushNamed(context, Login.id);
                     },
                   ),
                   SizedBox(
@@ -61,7 +72,7 @@ class AuthScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    color: Colors.purple,
+                    color: Colors.greenAccent,
                     child: Text(
                       "Sign Up",
                       style: TextStyle(fontSize: 20),

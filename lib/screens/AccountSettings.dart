@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:win75/components/profileSettingDialog.dart';
 import 'package:win75/controllers/transaction_controllers.dart';
 import 'package:win75/controllers/user_controllers.dart';
+import 'package:win75/models/GamesProvider.dart';
 import 'package:win75/models/User.dart';
+import 'package:win75/screens/About_Us.dart';
 import 'package:win75/screens/FAQ.dart';
+import 'package:win75/screens/RefundPolicies.dart';
 import 'package:win75/screens/Rules.dart';
 import 'package:win75/screens/authentication.dart';
 import 'package:win75/screens/games_history.dart';
@@ -16,6 +20,8 @@ import 'package:win75/utilities/UiIcons.dart';
 import 'package:win75/utilities/auth.dart';
 import 'package:win75/utilities/constants.dart';
 
+import 'TnC.dart';
+
 class AccountSettings extends StatefulWidget {
   static const id = '/accountSettings';
   @override
@@ -23,6 +29,17 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    razorPay = new Razorpay();
+
+    razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
+    razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
+    razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
+  }
+
   final _alertFormKey = GlobalKey<FormState>();
   final _addWalletFormKey = GlobalKey<FormState>();
   final _redeemWalletFormKey = GlobalKey<FormState>();
@@ -33,6 +50,90 @@ class _AccountSettingsState extends State<AccountSettings> {
       TextEditingController();
   final TextEditingController alertConfirmPasswordController =
       TextEditingController();
+  void handlerPaymentSuccess(PaymentSuccessResponse response) async {
+    User user = Provider.of<User>(context, listen: false);
+    List result;
+    print(" here ${addAmountController.text}");
+    Navigator.pop(context);
+    Fluttertoast.showToast(
+        msg: "Please wait!!",
+        backgroundColor: Colors.black,
+        textColor: Colors.white);
+    result = await TransactionControllers.addMoney(
+        amount: int.tryParse(addAmountController.text));
+    if (result[0]) {
+      print("lol $result");
+      print(result[1].username);
+      Fluttertoast.showToast(
+          msg: "Request Successful!!",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+      print(result[1].transactions);
+      await auth.updateUserSharedPreferences(
+          inWalletCash: result[1].inWalletCash,
+          username: user.username,
+          points: user.points,
+          transactions: result[1].transactions,
+          totalAmountWon: user.totalAmountWon,
+          totalAmountSpent: user.totalAmountSpent,
+          mobile: user.mobile,
+          games: user.games);
+      Provider.of<User>(context, listen: false).updateUser(
+          inWalletCash: result[1].inWalletCash,
+          points: user.points,
+          username: user.username,
+          transactions: result[1].transactions,
+          games: user.games,
+          mobile: user.mobile);
+    } else {
+      Fluttertoast.showToast(
+          msg: "Something failed, try again later.",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+    }
+    Fluttertoast.showToast(msg: "Payment Success");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    razorPay.clear();
+  }
+
+  void handlerErrorFailure(PaymentFailureResponse response) {
+    print("Payment error");
+    Fluttertoast.showToast(msg: "Payment Error");
+  }
+
+  void handlerExternalWallet(ExternalWalletResponse response) {
+    print("External Wallet");
+    Fluttertoast.showToast(msg: "External");
+  }
+
+  Razorpay razorPay;
+
+  void openCheckout() {
+    var options = {
+      "key": "rzp_test_NwfgCE8CdhXpFT",
+      "amount": num.parse(addAmountController.text) * 100,
+      "name": "Win75",
+      "description": "Start Earning!!!",
+      "prefill": {
+        "contact": Provider.of<User>(context, listen: false).mobile,
+        "email": Provider.of<User>(context, listen: false).email
+      },
+      "external": {
+        "wallets": ["paytm"]
+      }
+    };
+
+    try {
+      razorPay.open(options);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: true);
@@ -149,53 +250,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                               msg: "Processing",
                                               backgroundColor: Colors.black,
                                               textColor: Colors.white);
-                                          List result;
-                                          result = await TransactionControllers
-                                              .addMoney(
-                                                  amount: int.parse(
-                                                      addAmountController
-                                                          .text));
-                                          if (result[0]) {
-                                            print(result[1].username);
-                                            Fluttertoast.showToast(
-                                                msg: "Request Successful!!",
-                                                backgroundColor: Colors.black,
-                                                textColor: Colors.white);
-                                            auth.updateUserSharedPreferences(
-                                                inWalletCash:
-                                                    result[1].inWalletCash,
-                                                username: user.username,
-                                                points: user.points,
-                                                transactions:
-                                                    result[1].transactions,
-                                                totalAmountWon:
-                                                    user.totalAmountWon,
-                                                totalAmountSpent:
-                                                    user.totalAmountSpent,
-                                                mobile: user.mobile,
-                                                games: user.games);
-                                            Provider.of<User>(context,
-                                                    listen: false)
-                                                .updateUser(
-                                                    inWalletCash:
-                                                        result[1].inWalletCash,
-                                                    points: user.points,
-                                                    username: user.username,
-                                                    transactions:
-                                                        result[1].transactions,
-                                                    games: user.games,
-                                                    mobile: user.mobile);
-                                            Navigator.pop(context);
-                                          } else {
-                                            Fluttertoast.showToast(
-                                                msg:
-                                                    "Something failed, try again later.",
-                                                backgroundColor: Colors.black,
-                                                textColor: Colors.white);
-                                          }
-                                          setState(() {
-                                            addAmountController.clear();
-                                          });
+                                          openCheckout();
                                         }
                                       },
                                       color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -289,19 +344,20 @@ class _AccountSettingsState extends State<AccountSettings> {
                                           if (result[0]) {
                                             print(result[1]);
                                             print(result[1].transactions);
-                                            auth.updateUserSharedPreferences(
-                                                inWalletCash:
-                                                    result[1].inWalletCash,
-                                                username: user.username,
-                                                points: user.points,
-                                                transactions:
-                                                    result[1].transactions,
-                                                totalAmountWon:
-                                                    user.totalAmountWon,
-                                                totalAmountSpent:
-                                                    user.totalAmountSpent,
-                                                mobile: user.mobile,
-                                                games: user.games);
+                                            await auth
+                                                .updateUserSharedPreferences(
+                                                    inWalletCash:
+                                                        result[1].inWalletCash,
+                                                    username: user.username,
+                                                    points: user.points,
+                                                    transactions:
+                                                        result[1].transactions,
+                                                    totalAmountWon:
+                                                        user.totalAmountWon,
+                                                    totalAmountSpent:
+                                                        user.totalAmountSpent,
+                                                    mobile: user.mobile,
+                                                    games: user.games);
                                             Provider.of<User>(context,
                                                     listen: false)
                                                 .updateUser(
@@ -774,11 +830,73 @@ class _AccountSettingsState extends State<AccountSettings> {
                           ],
                         ),
                       ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.pushNamed(context, AboutUs.id);
+                        },
+                        dense: true,
+                        title: Row(
+                          children: <Widget>[
+                            Icon(
+                              FontAwesomeIcons.compass,
+                              size: 22,
+                              color: Theme.of(context).focusColor,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              'About Us',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ],
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.pushNamed(context, RefundPolicies.id);
+                        },
+                        dense: true,
+                        title: Row(
+                          children: <Widget>[
+                            Icon(
+                              FontAwesomeIcons.moneyCheck,
+                              size: 22,
+                              color: Theme.of(context).focusColor,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              'Refund Policies',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ],
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.pushNamed(context, TnC.id);
+                        },
+                        dense: true,
+                        title: Row(
+                          children: <Widget>[
+                            Icon(
+                              FontAwesomeIcons.exclamation,
+                              size: 22,
+                              color: Theme.of(context).focusColor,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              'TnC',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                          ],
+                        ),
+                      ),
                       Container(
                         color: Theme.of(context).accentColor,
                         child: ListTile(
                           onTap: () async {
                             await AuthService().logOutUser();
+                            Provider.of<GamesProvider>(context, listen: false)
+                                .removeSlots();
                             Navigator.pushNamedAndRemoveUntil(
                                 context, AuthScreen.id, (route) => false);
                           },

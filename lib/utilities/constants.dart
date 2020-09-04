@@ -117,3 +117,4 @@ const kTextFieldDecoration = InputDecoration(
 const inProgress = 'INPROGRESS';
 const diamond = 'DIAMOND';
 const heart = 'HEART';
+const apiKey = 'sq0idp-wA8hI6PpyVi3k3oaEdkeKw';

@@ -11,6 +11,7 @@ class PlaygroundGames {
       case 0:
         return Game(
           playerCount: 5,
+          isComplete: false,
           betValue: 50,
           gid: "random",
           slotId: "alsoRandom",
@@ -23,6 +24,7 @@ class PlaygroundGames {
         );
       case 1:
         return Game(
+          isComplete: false,
           playerCount: 7,
           betValue: 50,
           gid: "random",
@@ -276,6 +278,7 @@ class PlaygroundGames {
       case 3:
         return Game(
           playerCount: 7,
+          isComplete: false,
           betValue: 100,
           gid: "random",
           slotId: "alsoRandom",

@@ -1,10 +1,15 @@
 import 'package:flip_box_bar_plus/flip_box_bar_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:win75/components/profileSettingDialog.dart';
+import 'package:win75/controllers/transaction_controllers.dart';
+import 'package:win75/controllers/user_controllers.dart';
 import 'package:win75/models/User.dart';
 import 'package:win75/screens/AccountSettings.dart';
 import 'package:win75/screens/FAQ.dart';
@@ -36,7 +41,10 @@ class Pages extends StatefulWidget {
   }
 }
 
-class _PagesState extends State<Pages> {
+class _PagesState extends State<Pages>
+    with AutomaticKeepAliveClientMixin<Pages> {
+  @override
+  bool get wantKeepAlive => true;
   final AuthService authService = AuthService();
   final _walletFormKey = GlobalKey<FormState>();
   final TextEditingController addAmountController = TextEditingController();
@@ -44,10 +52,15 @@ class _PagesState extends State<Pages> {
   initState() {
     _selectTab(widget.currentTab);
     super.initState();
+    razorPay = new Razorpay();
+
+    razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
+    razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
+    razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
   }
 
   DateTime backButtonPressedTime;
-
+  bool gotWallet = false;
   @override
   void didUpdateWidget(Pages oldWidget) {
     _selectTab(oldWidget.currentTab);
@@ -105,10 +118,103 @@ class _PagesState extends State<Pages> {
     });
   }
 
+  Future<int> getCurrentInWalletCash() async {
+    setState(() {
+      gotWallet = true;
+    });
+    User newUser =
+        await UserController.getUser(uid: Provider.of<User>(context).uid);
+    return newUser.inWalletCash;
+  }
+
+  void handlerPaymentSuccess(PaymentSuccessResponse response) async {
+    User user = Provider.of<User>(context, listen: false);
+    List result;
+    print(" here ${addAmountController.text}");
+    Navigator.pop(context);
+    Fluttertoast.showToast(
+        msg: "Please wait!!",
+        backgroundColor: Colors.black,
+        textColor: Colors.white);
+    result = await TransactionControllers.addMoney(
+        amount: int.tryParse(addAmountController.text));
+    if (result[0]) {
+      print("lol $result");
+      print(result[1].username);
+      Fluttertoast.showToast(
+          msg: "Request Successful!!",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+      print(result[1].transactions);
+      await auth.updateUserSharedPreferences(
+          inWalletCash: result[1].inWalletCash,
+          username: user.username,
+          points: user.points,
+          transactions: result[1].transactions,
+          totalAmountWon: user.totalAmountWon,
+          totalAmountSpent: user.totalAmountSpent,
+          mobile: user.mobile,
+          games: user.games);
+      Provider.of<User>(context, listen: false).updateUser(
+          inWalletCash: result[1].inWalletCash,
+          points: user.points,
+          username: user.username,
+          transactions: result[1].transactions,
+          games: user.games,
+          mobile: user.mobile);
+    } else {
+      Fluttertoast.showToast(
+          msg: "Something failed, try again later.",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+    }
+    Fluttertoast.showToast(msg: "Payment Success");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    razorPay.clear();
+  }
+
+  void handlerErrorFailure(PaymentFailureResponse response) {
+    print("Payment error");
+    Fluttertoast.showToast(msg: "Payment Error");
+  }
+
+  void handlerExternalWallet(ExternalWalletResponse response) {
+    print("External Wallet");
+    Fluttertoast.showToast(msg: "External");
+  }
+
+  Razorpay razorPay;
+
+  void openCheckout() {
+    var options = {
+      "key": "rzp_test_NwfgCE8CdhXpFT",
+      "amount": num.parse(addAmountController.text) * 100,
+      "name": "Win75",
+      "description": "Start Earning!!!",
+      "prefill": {
+        "contact": Provider.of<User>(context, listen: false).mobile,
+        "email": Provider.of<User>(context, listen: false).email
+      },
+      "external": {
+        "wallets": ["paytm"]
+      }
+    };
+
+    try {
+      razorPay.open(options);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     User user = Provider.of<User>(context, listen: true);
-    print(user.inWalletCash);
     PopupMenuButton _itemDown() => PopupMenuButton(
           padding: EdgeInsets.all(0),
           elevation: 10,
@@ -167,19 +273,177 @@ class _PagesState extends State<Pages> {
                 AssetImage('assets/images/userDefault.jpeg'),
           ),
         );
-    return DefaultTabController(
-      length: 4,
-      initialIndex: 1,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: widget.currentTab == 1 || widget.currentTab == 2
-            ? AppBar(
-                title: Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
+    return gotWallet
+        ? DefaultTabController(
+            length: 4,
+            initialIndex: 1,
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              appBar: widget.currentTab == 1 || widget.currentTab == 2
+                  ? AppBar(
+                      title: Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                widget.currentTitle,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline2
+                                    .copyWith(
+                                        color: Theme.of(context).accentColor,
+                                        fontWeight: FontWeight.w800,
+                                        fontFamily: "karla",
+                                        fontSize: 26),
+                              ),
+                              widget.currentTab == 1
+                                  ? Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(UiIcons.money),
+                                            Text(
+                                              "  ${Provider.of<User>(context, listen: true).inWalletCash.toString()}",
+                                              style: TextStyle(
+                                                  fontFamily: "karla"),
+                                            ),
+                                          ],
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Alert(
+                                                    context: context,
+                                                    buttons: [
+                                                      DialogButton(
+                                                        child: Text(
+                                                          "Proceed",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 20),
+                                                        ),
+                                                        onPressed: () async {
+                                                          if (_walletFormKey
+                                                              .currentState
+                                                              .validate()) {
+                                                            openCheckout();
+                                                          }
+                                                        },
+                                                        color: Color.fromRGBO(
+                                                            0, 179, 134, 1.0),
+                                                        radius: BorderRadius
+                                                            .circular(0.0),
+                                                      ),
+                                                    ],
+                                                    title:
+                                                        "Enter amount to add",
+                                                    content: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 6,
+                                                                  bottom: 20.0),
+                                                          child: Form(
+                                                            key: _walletFormKey,
+                                                            child:
+                                                                TextFormField(
+                                                                    controller:
+                                                                        addAmountController,
+                                                                    keyboardType:
+                                                                        TextInputType
+                                                                            .numberWithOptions(),
+                                                                    decoration: kTextFieldDecoration.copyWith(
+                                                                        prefixIcon:
+                                                                            Icon(UiIcons
+                                                                                .money),
+                                                                        hintText:
+                                                                            "Enter Amount",
+                                                                        labelText:
+                                                                            "Amount"),
+                                                                    validator:
+                                                                        (value) {
+                                                                      if (value
+                                                                          .isEmpty) {
+                                                                        return 'Please enter amount';
+                                                                      }
+                                                                      return null;
+                                                                    }),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    style: kAlertStyle)
+                                                .show();
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 2),
+                                            decoration: ShapeDecoration(
+                                                shape: StadiumBorder(),
+                                                color: Colors.pink),
+                                            child: Text(
+                                              "Add Money",
+                                              style: TextStyle(
+                                                  fontFamily: "karla"),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : Row(
+                                      children: [
+                                        Icon(FontAwesomeIcons.coins),
+                                        Text(
+                                          "  ${Provider.of<User>(context, listen: true).points.toString()}",
+                                          style: TextStyle(fontFamily: "karla"),
+                                        ),
+                                      ],
+                                    ),
+                            ]),
+                      ),
+                      backgroundColor: Colors.amber,
+                      centerTitle: true,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(50),
+                              bottomRight: Radius.circular(20))),
+                      automaticallyImplyLeading: false,
+                      bottom: TabBar(
+                        indicatorSize: TabBarIndicatorSize.label,
+                        labelStyle:
+                            TextStyle(fontSize: 20, fontFamily: "karla"),
+                        labelColor: Theme.of(context).accentColor,
+//            indicatorColor: Colors.transparent,
+                        unselectedLabelColor: Colors.black38,
+                        tabs: [
+                          Tab(
+                            child: Text("50"),
+                          ),
+                          Tab(
+                            child: Text("100"),
+                          ),
+                          Tab(
+                            child: Text("500"),
+                          ),
+                          Tab(
+                            child: Text("1000"),
+                          )
+                        ],
+                      ),
+                    )
+                  : AppBar(
+                      automaticallyImplyLeading: false,
+                      backgroundColor: Colors.white,
+                      elevation: 0,
+                      title: Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
                           widget.currentTitle,
                           style: Theme.of(context).textTheme.headline2.copyWith(
                               color: Theme.of(context).accentColor,
@@ -187,218 +451,341 @@ class _PagesState extends State<Pages> {
                               fontFamily: "karla",
                               fontSize: 26),
                         ),
-                        widget.currentTab == 1
-                            ? Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(UiIcons.money),
-                                      Text(
-                                        "  ${Provider.of<User>(context, listen: true).inWalletCash.toString()}",
-                                        style: TextStyle(fontFamily: "karla"),
-                                      ),
-                                    ],
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Alert(
-                                              context: context,
-                                              buttons: [
-                                                DialogButton(
-                                                  child: Text(
-                                                    "Proceed",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 20),
-                                                  ),
-                                                  onPressed: () async {
-                                                    if (_walletFormKey
-                                                        .currentState
-                                                        .validate()) {
-                                                      Navigator.pop(context);
-                                                    }
-                                                  },
-                                                  color: Color.fromRGBO(
-                                                      0, 179, 134, 1.0),
-                                                  radius: BorderRadius.circular(
-                                                      0.0),
-                                                ),
-                                              ],
-                                              title: "Enter amount to add",
-                                              content: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
+                      ),
+                      actions: widget.currentTab == 3
+                          ? <Widget>[
+                              Container(
+                                width: 30,
+                                height: 30,
+                                margin: EdgeInsets.only(
+                                    top: 12.5, bottom: 12.5, right: 10),
+                                child: _itemDown(),
+                              ),
+                            ]
+                          : null,
+                    ),
+              body: widget.currentPage,
+              bottomNavigationBar: FlipBoxBarPlus(
+                animationDuration: Duration(seconds: 1),
+//          navBarHeight: MediaQuery.of(context).size.height * 0.1,
+                navBarWidth: MediaQuery.of(context).size.width * 0.8,
+                onIndexChanged: (int i) {
+                  this._selectTab(i);
+                },
+                selectedIndex: widget.currentTab,
+                items: [
+                  FlipBarItem(
+                      icon: Icon(UiIcons.home),
+                      text: Text(
+                        "Account",
+                        style: TextStyle(
+                          fontFamily: "karla",
+                        ),
+                      ),
+                      frontColor: Colors.cyan,
+                      backColor: Colors.cyanAccent),
+                  FlipBarItem(
+                      icon: Icon(FontAwesomeIcons.biohazard),
+                      text: Text(
+                        "BattleField",
+                        style: TextStyle(
+                          fontFamily: "karla",
+                        ),
+                      ),
+                      frontColor: Colors.orange,
+                      backColor: Colors.orangeAccent),
+                  FlipBarItem(
+                      icon: Icon(FontAwesomeIcons.footballBall),
+                      text: Text(
+                        "PlayGround",
+                        style: TextStyle(
+                          fontFamily: "karla",
+                        ),
+                      ),
+                      frontColor: Colors.purple,
+                      backColor: Colors.purpleAccent),
+                  FlipBarItem(
+                      icon: Icon(Icons.format_list_numbered),
+                      text: Text(
+                        "Leaderboard",
+                        style: TextStyle(
+                          fontFamily: "karla",
+                        ),
+                      ),
+                      frontColor: Colors.pink,
+                      backColor: Colors.pinkAccent),
+                ],
+              ),
+            ),
+          )
+        : FutureBuilder(
+            future: getCurrentInWalletCash(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done ||
+                  snapshot.connectionState == ConnectionState.active) {
+                print(snapshot.data);
+                print("in here lol");
+                user.inWalletCash = snapshot.data;
+                return DefaultTabController(
+                  length: 4,
+                  initialIndex: 1,
+                  child: Scaffold(
+                    backgroundColor: Colors.white,
+                    appBar: widget.currentTab == 1 || widget.currentTab == 2
+                        ? AppBar(
+                            title: Padding(
+                              padding: const EdgeInsets.only(left: 4),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Text(
+                                      widget.currentTitle,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline2
+                                          .copyWith(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontWeight: FontWeight.w800,
+                                              fontFamily: "karla",
+                                              fontSize: 26),
+                                    ),
+                                    widget.currentTab == 1
+                                        ? Column(
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 6,
-                                                            bottom: 20.0),
-                                                    child: Form(
-                                                      key: _walletFormKey,
-                                                      child: TextFormField(
-                                                          controller:
-                                                              addAmountController,
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .numberWithOptions(),
-                                                          decoration: kTextFieldDecoration
-                                                              .copyWith(
-                                                                  prefixIcon:
-                                                                      Icon(UiIcons
-                                                                          .money),
-                                                                  hintText:
-                                                                      "Enter Amount",
-                                                                  labelText:
-                                                                      "Amount"),
-                                                          validator: (value) {
-                                                            if (value.isEmpty) {
-                                                              return 'Please enter amount';
-                                                            }
-                                                            return null;
-                                                          }),
-                                                    ),
+                                                  Icon(UiIcons.money),
+                                                  Text(
+                                                    "  ${Provider.of<User>(context, listen: true).inWalletCash.toString()}",
+                                                    style: TextStyle(
+                                                        fontFamily: "karla"),
                                                   ),
                                                 ],
                                               ),
-                                              style: kAlertStyle)
-                                          .show();
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 2),
-                                      decoration: ShapeDecoration(
-                                          shape: StadiumBorder(),
-                                          color: Colors.pink),
-                                      child: Text(
-                                        "Add Money",
-                                        style: TextStyle(fontFamily: "karla"),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Icon(FontAwesomeIcons.coins),
-                                  Text(
-                                    "  ${Provider.of<User>(context, listen: true).points.toString()}",
-                                    style: TextStyle(fontFamily: "karla"),
-                                  ),
-                                ],
-                              ),
-                      ]),
-                ),
-                backgroundColor: Colors.amber,
-                centerTitle: true,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(50),
-                        bottomRight: Radius.circular(20))),
-                automaticallyImplyLeading: false,
-                bottom: TabBar(
-                  indicatorSize: TabBarIndicatorSize.label,
-                  labelStyle: TextStyle(fontSize: 20, fontFamily: "karla"),
-                  labelColor: Theme.of(context).accentColor,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Alert(
+                                                          context: context,
+                                                          buttons: [
+                                                            DialogButton(
+                                                              child: Text(
+                                                                "Proceed",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        20),
+                                                              ),
+                                                              onPressed:
+                                                                  () async {
+                                                                if (_walletFormKey
+                                                                    .currentState
+                                                                    .validate()) {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                }
+                                                              },
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      0,
+                                                                      179,
+                                                                      134,
+                                                                      1.0),
+                                                              radius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          0.0),
+                                                            ),
+                                                          ],
+                                                          title:
+                                                              "Enter amount to add",
+                                                          content: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        top: 6,
+                                                                        bottom:
+                                                                            20.0),
+                                                                child: Form(
+                                                                  key:
+                                                                      _walletFormKey,
+                                                                  child: TextFormField(
+                                                                      controller: addAmountController,
+                                                                      keyboardType: TextInputType.numberWithOptions(),
+                                                                      decoration: kTextFieldDecoration.copyWith(prefixIcon: Icon(UiIcons.money), hintText: "Enter Amount", labelText: "Amount"),
+                                                                      validator: (value) {
+                                                                        if (value
+                                                                            .isEmpty) {
+                                                                          return 'Please enter amount';
+                                                                        }
+                                                                        return null;
+                                                                      }),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          style: kAlertStyle)
+                                                      .show();
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 2),
+                                                  decoration: ShapeDecoration(
+                                                      shape: StadiumBorder(),
+                                                      color: Colors.pink),
+                                                  child: Text(
+                                                    "Add Money",
+                                                    style: TextStyle(
+                                                        fontFamily: "karla"),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        : Row(
+                                            children: [
+                                              Icon(FontAwesomeIcons.coins),
+                                              Text(
+                                                "  ${Provider.of<User>(context, listen: true).points.toString()}",
+                                                style: TextStyle(
+                                                    fontFamily: "karla"),
+                                              ),
+                                            ],
+                                          ),
+                                  ]),
+                            ),
+                            backgroundColor: Colors.amber,
+                            centerTitle: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(50),
+                                    bottomRight: Radius.circular(20))),
+                            automaticallyImplyLeading: false,
+                            bottom: TabBar(
+                              indicatorSize: TabBarIndicatorSize.label,
+                              labelStyle:
+                                  TextStyle(fontSize: 20, fontFamily: "karla"),
+                              labelColor: Theme.of(context).accentColor,
 //            indicatorColor: Colors.transparent,
-                  unselectedLabelColor: Colors.black38,
-                  tabs: [
-                    Tab(
-                      child: Text("50"),
-                    ),
-                    Tab(
-                      child: Text("100"),
-                    ),
-                    Tab(
-                      child: Text("500"),
-                    ),
-                    Tab(
-                      child: Text("1000"),
-                    )
-                  ],
-                ),
-              )
-            : AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.white,
-                elevation: 0,
-                title: Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: Text(
-                    widget.currentTitle,
-                    style: Theme.of(context).textTheme.headline2.copyWith(
-                        color: Theme.of(context).accentColor,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: "karla",
-                        fontSize: 26),
-                  ),
-                ),
-                actions: widget.currentTab == 3
-                    ? <Widget>[
-                        Container(
-                          width: 30,
-                          height: 30,
-                          margin: EdgeInsets.only(
-                              top: 12.5, bottom: 12.5, right: 10),
-                          child: _itemDown(),
-                        ),
-                      ]
-                    : null,
-              ),
-        body: widget.currentPage,
-        bottomNavigationBar: FlipBoxBarPlus(
-          animationDuration: Duration(seconds: 1),
+                              unselectedLabelColor: Colors.black38,
+                              tabs: [
+                                Tab(
+                                  child: Text("50"),
+                                ),
+                                Tab(
+                                  child: Text("100"),
+                                ),
+                                Tab(
+                                  child: Text("500"),
+                                ),
+                                Tab(
+                                  child: Text("1000"),
+                                )
+                              ],
+                            ),
+                          )
+                        : AppBar(
+                            automaticallyImplyLeading: false,
+                            backgroundColor: Colors.white,
+                            elevation: 0,
+                            title: Padding(
+                              padding: const EdgeInsets.only(left: 4),
+                              child: Text(
+                                widget.currentTitle,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline2
+                                    .copyWith(
+                                        color: Theme.of(context).accentColor,
+                                        fontWeight: FontWeight.w800,
+                                        fontFamily: "karla",
+                                        fontSize: 26),
+                              ),
+                            ),
+                            actions: widget.currentTab == 3
+                                ? <Widget>[
+                                    Container(
+                                      width: 30,
+                                      height: 30,
+                                      margin: EdgeInsets.only(
+                                          top: 12.5, bottom: 12.5, right: 10),
+                                      child: _itemDown(),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                    body: widget.currentPage,
+                    bottomNavigationBar: FlipBoxBarPlus(
+                      animationDuration: Duration(seconds: 1),
 //          navBarHeight: MediaQuery.of(context).size.height * 0.1,
-          navBarWidth: MediaQuery.of(context).size.width * 0.8,
-          onIndexChanged: (int i) {
-            this._selectTab(i);
-          },
-          selectedIndex: widget.currentTab,
-          items: [
-            FlipBarItem(
-                icon: Icon(UiIcons.home),
-                text: Text(
-                  "Account",
-                  style: TextStyle(
-                    fontFamily: "karla",
+                      navBarWidth: MediaQuery.of(context).size.width * 0.8,
+                      onIndexChanged: (int i) {
+                        this._selectTab(i);
+                      },
+                      selectedIndex: widget.currentTab,
+                      items: [
+                        FlipBarItem(
+                            icon: Icon(UiIcons.home),
+                            text: Text(
+                              "Account",
+                              style: TextStyle(
+                                fontFamily: "karla",
+                              ),
+                            ),
+                            frontColor: Colors.cyan,
+                            backColor: Colors.cyanAccent),
+                        FlipBarItem(
+                            icon: Icon(FontAwesomeIcons.biohazard),
+                            text: Text(
+                              "BattleField",
+                              style: TextStyle(
+                                fontFamily: "karla",
+                              ),
+                            ),
+                            frontColor: Colors.orange,
+                            backColor: Colors.orangeAccent),
+                        FlipBarItem(
+                            icon: Icon(FontAwesomeIcons.footballBall),
+                            text: Text(
+                              "PlayGround",
+                              style: TextStyle(
+                                fontFamily: "karla",
+                              ),
+                            ),
+                            frontColor: Colors.purple,
+                            backColor: Colors.purpleAccent),
+                        FlipBarItem(
+                            icon: Icon(Icons.format_list_numbered),
+                            text: Text(
+                              "Leaderboard",
+                              style: TextStyle(
+                                fontFamily: "karla",
+                              ),
+                            ),
+                            frontColor: Colors.pink,
+                            backColor: Colors.pinkAccent),
+                      ],
+                    ),
                   ),
-                ),
-                frontColor: Colors.cyan,
-                backColor: Colors.cyanAccent),
-            FlipBarItem(
-                icon: Icon(FontAwesomeIcons.biohazard),
-                text: Text(
-                  "BattleField",
-                  style: TextStyle(
-                    fontFamily: "karla",
+                );
+              } else {
+                return Scaffold(
+                  body: Container(
+                    alignment: Alignment.center,
+                    child: SpinKitCubeGrid(
+                      color: Theme.of(context).accentColor,
+                    ),
                   ),
-                ),
-                frontColor: Colors.orange,
-                backColor: Colors.orangeAccent),
-            FlipBarItem(
-                icon: Icon(FontAwesomeIcons.footballBall),
-                text: Text(
-                  "PlayGround",
-                  style: TextStyle(
-                    fontFamily: "karla",
-                  ),
-                ),
-                frontColor: Colors.purple,
-                backColor: Colors.purpleAccent),
-            FlipBarItem(
-                icon: Icon(Icons.format_list_numbered),
-                text: Text(
-                  "Leaderboard",
-                  style: TextStyle(
-                    fontFamily: "karla",
-                  ),
-                ),
-                frontColor: Colors.pink,
-                backColor: Colors.pinkAccent),
-          ],
-        ),
-      ),
-    );
+                );
+              }
+            });
   }
 }

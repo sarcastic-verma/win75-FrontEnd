@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:win75/components/GamePage.dart';
+import 'package:win75/components/PlayGamePage.dart';
 import 'package:win75/components/pages.dart';
 import 'package:win75/controllers/transaction_controllers.dart';
 import 'package:win75/models/Game.dart';
@@ -36,6 +36,7 @@ class _PlayGroundState extends State<PlayGround> {
   int total100Gain;
   int total500Gain;
   int total1000Gain;
+
   Future updateGains() async {
     List temp;
     if (played50Game) {
@@ -64,9 +65,17 @@ class _PlayGroundState extends State<PlayGround> {
       total1000Gain = temp[0];
       dropped1000Options = temp[1];
     }
+    print("in updaet");
+  }
+
+  @override
+  void initState() {
+    print("playgroud...re");
+    super.initState();
   }
 
   callback(int amount, Set options) {
+    print("in call back");
     setState(() {
       if (amount == 50) {
         played50Game = true;
@@ -82,6 +91,8 @@ class _PlayGroundState extends State<PlayGround> {
         game1000Options = options;
       }
     });
+    print("done call back");
+    print(played100Game);
   }
 
   @override
@@ -94,25 +105,21 @@ class _PlayGroundState extends State<PlayGround> {
             ? Container(
                 padding: EdgeInsets.all(10),
                 child: TabBarView(children: [
-                  GamePage(
+                  PlayGamePage(
                     betAmount: 50,
-                    type: "play",
-                    callback: callback,
+                    gamePageCallback: callback,
                   ),
-                  GamePage(
+                  PlayGamePage(
                     betAmount: 100,
-                    type: "play",
-                    callback: callback,
+                    gamePageCallback: callback,
                   ),
-                  GamePage(
+                  PlayGamePage(
                     betAmount: 500,
-                    type: "play",
-                    callback: callback,
+                    gamePageCallback: callback,
                   ),
-                  GamePage(
+                  PlayGamePage(
                     betAmount: 1000,
-                    callback: callback,
-                    type: "play",
+                    gamePageCallback: callback,
                   ),
                 ]),
               )
@@ -156,10 +163,12 @@ class _PlayGroundState extends State<PlayGround> {
                   duration: 15,
                   onComplete: () async {
                     try {
+                      print(played100Game);
                       if (played1000Game ||
                           played500Game ||
                           played100Game ||
                           played50Game) {
+                        print("in if");
                         Fluttertoast.showToast(msg: "Calculating");
                         await updateGains();
                         setState(() {

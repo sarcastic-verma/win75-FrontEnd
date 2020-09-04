@@ -23,6 +23,9 @@ class GameControllers {
         jsonResponse = jsonResponse['game'];
         game = Game(
             gid: jsonResponse['id'],
+            startTime: jsonResponse['startTime'],
+            endTime: jsonResponse['endTime'],
+            isComplete: jsonResponse['isComplete'],
             betValue: jsonResponse['betValue'],
             clubTotalInvestment: jsonResponse['clubTotalInvestment'],
             spadesTotalInvestment: jsonResponse['spadesTotalInvestment'],
@@ -48,47 +51,52 @@ class GameControllers {
   }
 
   static Future getGamesByUserId() async {
-    List<Game> games;
+    List<Game> games = [];
     try {
       String token = await storage.read(key: 'jwt');
       var response = await http.get(getGamesByUserIdCa,
           headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+
       if (response.statusCode == 200) {
+        print("here");
         var jsonResponse = await json.decode(response.body);
         jsonResponse = jsonResponse['games'];
         jsonResponse.forEach((item) {
           games.add(Game(
-              gid: jsonResponse['id'],
-              betValue: jsonResponse['betValue'],
-              clubTotalInvestment: jsonResponse['clubTotalInvestment'],
-              spadesTotalInvestment: jsonResponse['spadesTotalInvestment'],
-              diamondTotalInvestment: jsonResponse['diamondTotalInvestment'],
-              heartTotalInvestment: jsonResponse['heartTotalInvestment'],
-              distributableProfit: jsonResponse['distributableProfit'],
+              startTime: item['startTime'],
+              endTime: item['endTime'],
+              gid: item['id'],
+              isComplete: item['isComplete'],
+              betValue: item['betValue'],
+              clubTotalInvestment: item['clubTotalInvestment'].toInt(),
+              spadesTotalInvestment: item['spadesTotalInvestment'].toInt(),
+              diamondTotalInvestment: item['diamondTotalInvestment'].toInt(),
+              heartTotalInvestment: item['heartTotalInvestment'].toInt(),
+              distributableProfit: item['distributableProfit'].toInt(),
               distributableProfitPercent:
-                  jsonResponse['distributableProfitPercent'],
-              gameInvestment: jsonResponse['gameInvestment'],
-              playerCount: jsonResponse['playerCount'],
-              playerSummary: jsonResponse['playerSummary'],
-              totalProfit: jsonResponse['totalProfit'],
-              businessProfit: jsonResponse['businessProfit'],
-              droppedOptions: jsonResponse['droppedOptions'],
-              slotId: jsonResponse['slotId']));
+                  item['distributableProfitPercent'].toDouble(),
+              gameInvestment: item['gameInvestment'].toInt(),
+              playerCount: item['playerCount'],
+              playerSummary: item['playerSummary'],
+              totalProfit: item['totalProfit'].toInt(),
+              businessProfit: item['businessProfit'].toInt(),
+              droppedOptions: item['droppedOptions'],
+              slotId: item['slotId']));
         });
+        print("yoyo");
         return games;
       } else {
-        return false;
+        return [];
       }
     } catch (err) {
-      return false;
+      print(err);
+      return [];
     }
   }
 
   static Future endGame(String gameId) async {
     try {
-      String token = await storage.read(key: 'jwt');
-      var response = await http.get(endGameCa + gameId,
-          headers: {HttpHeaders.authorizationHeader: 'Bearer $token'});
+      var response = await http.get(endGameNca + gameId);
       if (response.statusCode == 200) {
         return true;
       } else {

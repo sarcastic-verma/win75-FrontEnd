@@ -121,6 +121,23 @@ class TransactionControllers {
     }
   }
 
+  static Future realTransactionCa({int amount, String nonce}) async {
+    var jsonData = json.encode({"amount": amount, "nonce": nonce});
+    try {
+      String token = await storage.read(key: 'jwt');
+      var response = await http.post(realTransaction, body: jsonData, headers: {
+        "Content-Type": "application/json",
+        HttpHeaders.authorizationHeader: "Bearer $token"
+      });
+      print(response.body);
+      return response;
+    } catch (err) {
+      print("yha");
+      print(err);
+      return null;
+    }
+  }
+
   static Future<List> reducePoints({int amount}) async {
     var jsonData = json.encode({"amount": amount});
     try {

@@ -21,19 +21,22 @@ class ConnectionLost extends StatelessWidget {
           ),
           Text(
             "Connection Lost",
-//            style: kConnectionPageHeader,
+            style: Theme.of(context)
+                .textTheme
+                .headline3
+                .copyWith(fontFamily: "pacifico"),
             textAlign: TextAlign.center,
           ),
           Container(
             margin: EdgeInsets.all(30),
             decoration: ShapeDecoration(
-//                color: kAccentColor,
+                color: Colors.grey[300],
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(30)))),
             padding: EdgeInsets.all(10),
             child: Text(
-              "Hey reader,\nIt looks like you are not connected to internet.\n\n Try Again Later!!!",
-//              style: kConnectionPageText,
+              "Hey,\nIt looks like you are not connected to internet.\n\n Try Again Later!!!",
+              style: Theme.of(context).textTheme.headline1,
               softWrap: true,
               textAlign: TextAlign.center,
             ),

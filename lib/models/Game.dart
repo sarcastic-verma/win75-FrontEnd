@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart';
 
 class Game {
   String gid;
+  bool isComplete;
   String slotId;
   double distributableProfitPercent;
   int businessProfit;
+  String startTime;
+  String endTime;
   int distributableProfit;
   int totalProfit;
   int gameInvestment;
@@ -17,12 +20,15 @@ class Game {
   int betValue;
   List playerSummary;
   Game({
+    @required this.startTime,
+    @required this.endTime,
     @required this.slotId,
     @required this.betValue,
     @required this.distributableProfit,
     @required this.totalProfit,
     @required this.gameInvestment,
     @required this.droppedOptions,
+    @required this.isComplete,
     @required this.spadesTotalInvestment,
     @required this.clubTotalInvestment,
     @required this.heartTotalInvestment,

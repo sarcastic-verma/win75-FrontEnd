@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:win75/components/pages.dart';
+import 'package:win75/screens/About_Us.dart';
 import 'package:win75/screens/FAQ.dart';
+import 'package:win75/screens/PlayerSummaryDetails.dart';
+import 'package:win75/screens/RefundPolicies.dart';
 import 'package:win75/screens/Rules.dart';
 import 'package:win75/screens/SplashScreen.dart';
+import 'package:win75/screens/TnC.dart';
 import 'package:win75/screens/authentication.dart';
 import 'package:win75/screens/battlefield.dart';
 import 'package:win75/screens/connection.dart';
@@ -36,8 +40,8 @@ class RouteGenerator {
 
       case BattleFieldScreen.id:
         return MaterialPageRoute(builder: (_) => BattleFieldScreen());
-      case LoginIn.id:
-        return MaterialPageRoute(builder: (_) => LoginIn());
+      case Login.id:
+        return MaterialPageRoute(builder: (_) => Login());
       case SignUp.id:
         return MaterialPageRoute(builder: (_) => SignUp());
 //      case ProfileScreen.id:
@@ -57,6 +61,17 @@ class RouteGenerator {
                 ));
       case IntroScreen.id:
         return MaterialPageRoute(builder: (_) => IntroScreen());
+      case TnC.id:
+        return MaterialPageRoute(builder: (_) => TnC());
+      case RefundPolicies.id:
+        return MaterialPageRoute(builder: (_) => RefundPolicies());
+      case AboutUs.id:
+        return MaterialPageRoute(builder: (_) => AboutUs());
+      case PlayerSummaryDetails.id:
+        return MaterialPageRoute(
+            builder: (_) => PlayerSummaryDetails(
+                  gameId: args,
+                ));
       case ConnectionLost.id:
         return MaterialPageRoute(builder: (_) => ConnectionLost());
 // Validation of correct data type

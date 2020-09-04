@@ -97,6 +97,9 @@ class AuthService {
       await prefs.remove('uid');
       await prefs.remove('mobile');
       await prefs.remove('joinedOn');
+      await prefs.remove('played3to4');
+      await prefs.remove('played4to5');
+      await prefs.remove('played5to6');
       print("log out kr dia");
     } catch (err) {
       print(err);
